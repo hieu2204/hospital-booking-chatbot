@@ -19,6 +19,7 @@ from sqlalchemy import (
     Text,
     Time,
     UniqueConstraint,
+    false,
     func,
     text,
 )
@@ -257,6 +258,7 @@ class Appointment(Base):
     payer_type: Mapped[PayerType] = mapped_column(enum_type(PayerType), default=PayerType.none)
     referral_expiry: Mapped[date | None] = mapped_column(Date)
     symptoms: Mapped[str | None] = mapped_column(Text)
+    bhyt_consent: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false())
     status: Mapped[AppointmentStatus] = mapped_column(
         enum_type(AppointmentStatus), default=AppointmentStatus.pending_payment
     )

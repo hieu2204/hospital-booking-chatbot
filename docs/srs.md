@@ -422,6 +422,7 @@ Mọi điểm mở đã được chốt ngày 07/11/2026. Đây là bản demo n
 | Bảo lãnh viện phí | Chỉ ghi nhận đối tượng thanh toán và hướng dẫn đến quầy, không xử lý thủ tục với công ty bảo hiểm | Giới hạn phạm vi |
 | LLM | Claude API | Quyết định kỹ thuật |
 | Vector DB | pgvector: miễn phí, chạy ngay trong PostgreSQL có sẵn nên không thêm dịch vụ nào. Giữ nguyên bảng `document_chunks` ở mục 8 | Quyết định kỹ thuật |
+| Thanh toán khi có BHYT | Demo thu đủ phí khám, mức hưởng BHYT chỉ để tư vấn. Khám trái tuyến chỉ cần tick cam kết; tải ảnh CCCD làm cùng frontend | Giả định |
 
 ## Nguồn
 

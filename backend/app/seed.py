@@ -7,7 +7,6 @@ tạo một lần, ca khám được sinh bù cho những ngày còn thiếu.
 import random
 from datetime import date, datetime
 
-import bcrypt
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -28,6 +27,7 @@ from app.models import (
     User,
     UserRole,
 )
+from app.security import encrypt, hash_password
 from app.services.schedule import SATURDAY, generate_sessions
 
 # "Khám bệnh" là khoa dự phòng khi bot không xác định được chuyên khoa (UC-06)
@@ -72,10 +72,6 @@ FAMILY_NAMES = ["Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Phan", "Vũ", 
 MIDDLE_NAMES = ["Văn", "Thị", "Minh", "Thanh", "Quốc", "Ngọc", "Hữu", "Thu", "Đức", "Hải"]
 GIVEN_NAMES = ["An", "Bình", "Châu", "Dũng", "Giang", "Hà", "Khoa", "Lan", "Mai", "Nam",
                "Oanh", "Phúc", "Quân", "Sơn", "Tâm", "Uyên", "Vinh", "Yến"]
-
-
-def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
 
 def doctor_weekly_slots(dept_index: int, doctor_index: int) -> list[tuple[int, Shift, str]]:
@@ -211,6 +207,15 @@ def main() -> None:
             seed_catalog(db)
             db.flush()
             print("Đã tạo danh mục")
+
+        demo_profile = db.scalar(
+            select(PatientProfile).where(
+                PatientProfile.relation == "Bản thân", PatientProfile.bhyt_code_enc.is_(None)
+            )
+        )
+        if demo_profile:
+            demo_profile.bhyt_code_enc = encrypt("DN4797900000001")
+            demo_profile.bhyt_rate = 80
 
         today = datetime.now(settings.tz).date()
         created = generate_sessions(db, today, settings.booking_window_days + 1)

@@ -6,7 +6,11 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     database_url: str
+    jwt_secret: str
+    encryption_key: str
     seed_password: str = "demo1234"
+    demo_otp: str = "123456"
+    token_minutes: int = 480
     timezone: str = "Asia/Ho_Chi_Minh"
 
     # BR-01, BR-02: khung giờ khám
@@ -19,8 +23,19 @@ class Settings(BaseSettings):
     slot_minutes: int = 30
     capacity_per_slot: int = 3
 
-    # BR-07: đặt trước tối đa
+    # BR-07: đặt trước tối đa, hạn đặt lịch cho ngày mai
     booking_window_days: int = 30
+    booking_cutoff: time = time(16, 30)
+
+    # BR-14: số lịch tối đa của một hồ sơ trong một ngày
+    max_appointments_per_day: int = 3
+
+    # BR-16: thời gian giữ chỗ chờ thanh toán
+    hold_minutes: int = 15
+
+    # BR-26, BR-28: hạn hủy, sửa vào ngày trước ngày khám
+    cancel_cutoff: time = time(15, 0)
+    edit_cutoff: time = time(16, 30)
 
     @property
     def tz(self) -> ZoneInfo:

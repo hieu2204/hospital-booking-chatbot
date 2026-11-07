@@ -54,6 +54,7 @@ Cột **Áp dụng tại**:
 | BR-18 | Hình thức khám trong MVP: **Khám thường**, **Phòng khám Chuyên gia**, **Tái khám**. Khám sức khỏe theo gói để vào phần mở rộng | UMC (13) | Booking |
 | BR-18a | Giá khám demo: Khám thường và Tái khám 150.000đ (Medpro), Phòng khám Chuyên gia 300.000đ (giả định, không đọc được Bảng giá của UMC). Phòng khám Chuyên gia không nhận BHYT (giả định) | Medpro / Giả định | Booking, Chatbot |
 | BR-19 | Đối tượng thanh toán của lịch hẹn: `none` (dịch vụ) / `bhyt_dung_tuyen` / `bhyt_trai_tuyen` / `bao_lanh` (bảo hiểm tư nhân). Với `bao_lanh`, hệ thống chỉ ghi nhận và hướng dẫn đến quầy | UMC (02, 03, 06) | Booking |
+| BR-19a | Demo thu đủ phí khám dù có BHYT; mức hưởng chỉ dùng để tư vấn | Giả định | Booking, Chatbot |
 | BR-20 | BHYT đúng tuyến cần: thẻ BHYT (hoặc CCCD/VNeID có tích hợp), giấy tờ có ảnh, và **giấy chuyển tuyến** hoặc **giấy hẹn tái khám** | UMC (02) | Chatbot, UI |
 | BR-21 | Giấy chuyển tuyến có hạn **10 ngày làm việc** (bệnh thuộc Phụ lục III: 1 năm). Hệ thống cảnh báo nếu ngày khám vượt hạn giấy | UMC (02) | Booking, Chatbot |
 | BR-22 | Trái tuyến ngoại trú (từ 01/07/2026): BHYT chi trả **50% mức hưởng** (100%→50%, 95%→47,5%, 80%→40%). Khi đặt phải đính kèm ảnh CCCD 2 mặt và tick ô cam kết | UMC (03, 04) | Booking, Chatbot |
