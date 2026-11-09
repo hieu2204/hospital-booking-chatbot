@@ -6,6 +6,7 @@
 - Tool chạy trên session database riêng, nên lỗi API giữa lượt không để lại lịch sử dở dang.
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from functools import lru_cache
 
@@ -22,6 +23,20 @@ from app.services.safety import check_message
 from app.services.text import mask_pii
 
 API_ROLE = {ChatRole.user: "user", ChatRole.tool: "user", ChatRole.assistant: "assistant"}
+
+# Dòng trạng thái hiện trên giao diện trong lúc chờ
+STATUS_LABELS = {
+    "search_docs": "Đang tra tài liệu hướng dẫn...",
+    "list_departments": "Đang xem danh sách chuyên khoa...",
+    "suggest_department": "Đang gợi ý chuyên khoa...",
+    "get_doctors": "Đang xem lịch bác sĩ...",
+    "get_available_slots": "Đang tìm giờ khám còn trống...",
+    "get_profiles": "Đang xem hồ sơ người bệnh...",
+    "prepare_booking": "Đang chuẩn bị phiếu đặt lịch...",
+    "list_my_appointments": "Đang xem lịch hẹn của bạn...",
+    "propose_cancel": "Đang kiểm tra điều kiện hủy lịch...",
+    "propose_reschedule": "Đang kiểm tra điều kiện đổi lịch...",
+}
 
 
 class AgentUnavailable(Exception):
@@ -92,7 +107,15 @@ def add_usage(total: dict, step: dict) -> dict:
     return {key: total.get(key, 0) + value for key, value in step.items()}
 
 
-def run_turn(db: Session, chat: ChatSession, user_text: str, user_id: int | None) -> TurnResult:
+def run_turn(
+    db: Session,
+    chat: ChatSession,
+    user_text: str,
+    user_id: int | None,
+    on_event: Callable[[dict], None] | None = None,
+    skip_emergency_check: bool = False,
+) -> TurnResult:
+    emit = on_event or (lambda event: None)
     text = mask_pii(user_text)[: settings.chat_max_message_chars]
     db.add(
         ChatMessage(
@@ -104,7 +127,7 @@ def run_turn(db: Session, chat: ChatSession, user_text: str, user_id: int | None
     )
 
     safety = check_message(text)
-    if safety.is_emergency:
+    if safety.is_emergency and not skip_emergency_check:
         cards = [{"type": "emergency", "category": safety.category}]
         db.add(
             ChatMessage(
@@ -126,6 +149,7 @@ def run_turn(db: Session, chat: ChatSession, user_text: str, user_id: int | None
 
     with SessionLocal() as tool_db:
         ctx = chat_tools.ToolContext(db=tool_db, user_id=user_id, chat_session_id=chat.id)
+        emit({"type": "status", "text": "Đang suy nghĩ..."})
         for _ in range(settings.chat_max_steps):
             try:
                 response = call_model(
@@ -168,6 +192,7 @@ def run_turn(db: Session, chat: ChatSession, user_text: str, user_id: int | None
             for block in response.content:
                 if block.type != "tool_use":
                     continue
+                emit({"type": "status", "text": STATUS_LABELS.get(block.name, "Đang xử lý...")})
                 output, is_error = chat_tools.run_tool(ctx, block.name, block.input)
                 results.append(
                     {"type": "tool_result", "tool_use_id": block.id, "content": output, "is_error": is_error}

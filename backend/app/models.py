@@ -228,6 +228,7 @@ class PatientProfile(Base):
     bhyt_code_enc: Mapped[str | None] = mapped_column(Text)
     bhyt_rate: Mapped[int | None] = mapped_column(SmallInteger)
     hospital_patient_code: Mapped[str | None] = mapped_column(String(30))
+    id_images_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     phone: Mapped[str | None] = mapped_column(String(15))
     email: Mapped[str | None] = mapped_column(String(160))
     address: Mapped[str | None] = mapped_column(String(300))

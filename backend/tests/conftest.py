@@ -81,6 +81,7 @@ def add_profile(db, user: models.User, with_bhyt: bool = True) -> models.Patient
         relation="Bản thân",
         bhyt_code_enc=encrypt("DN4797912345678") if with_bhyt else None,
         bhyt_rate=80 if with_bhyt else None,
+        id_images_at=NOW if with_bhyt else None,
     )
     db.add(profile)
     db.flush()

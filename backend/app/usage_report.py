@@ -8,7 +8,7 @@ from app.db import SessionLocal
 from app.models import ChatMessage
 
 
-def main() -> None:
+def summarize() -> dict[str, dict]:
     totals: dict[str, dict] = defaultdict(lambda: defaultdict(float))
     with SessionLocal() as db:
         for meta in db.scalars(select(ChatMessage.meta).where(ChatMessage.meta.is_not(None))):
@@ -19,7 +19,11 @@ def main() -> None:
             row["turns"] += 1
             for key, value in usage.items():
                 row[key] += value
+    return {model: dict(row) for model, row in totals.items()}
 
+
+def main() -> None:
+    totals = summarize()
     if not totals:
         print("Chưa có lượt chat nào gọi Claude")
     for model, row in totals.items():

@@ -48,6 +48,10 @@ class Settings(BaseSettings):
     search_min_score: float = 0.0
     preload_embedding: bool = True
 
+    # BR-22: ảnh CCCD khi khám trái tuyến
+    upload_dir: str = "/data/uploads"
+    max_upload_bytes: int = 5 * 1024 * 1024
+
     # Chatbot. Đổi mô hình bằng biến môi trường CHAT_MODEL (NFR-09)
     chat_model: str = "claude-sonnet-5-5"
     chat_effort: str = "low"

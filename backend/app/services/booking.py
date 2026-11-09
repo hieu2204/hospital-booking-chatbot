@@ -190,6 +190,8 @@ def check_payer(
     if profile.bhyt_code_enc is None:
         raise BookingError("PROFILE_MISSING_BHYT", "Hồ sơ chưa có số thẻ BHYT")
     # BR-22
+    if payer_type == PayerType.bhyt_trai_tuyen and profile.id_images_at is None:
+        raise BookingError("ID_IMAGES_REQUIRED", "Khám trái tuyến cần tải ảnh CCCD hai mặt ở trang Hồ sơ")
     if payer_type == PayerType.bhyt_trai_tuyen and not consent:
         raise BookingError("CONSENT_REQUIRED", "Khám trái tuyến cần đồng ý cam kết")
 
@@ -552,6 +554,9 @@ def describe(db: Session, appointment: Appointment) -> dict:
     return {
         "id": appointment.id,
         "code": appointment.code,
+        "session_id": session.id,
+        "department_id": room.department_id,
+        "service_type_id": session.service_type_id,
         "status": appointment.status,
         "profile_id": appointment.profile_id,
         "patient_name": db.get(PatientProfile, appointment.profile_id).full_name,

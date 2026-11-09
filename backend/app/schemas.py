@@ -70,6 +70,7 @@ class ProfileOut(BaseModel):
     phone: str | None
     email: str | None
     address: str | None
+    has_id_images: bool
 
 
 class DepartmentOut(BaseModel):
@@ -135,6 +136,9 @@ class AppointmentOut(BaseModel):
     id: int
     code: str
     status: AppointmentStatus
+    session_id: int
+    department_id: int
+    service_type_id: int
     profile_id: int
     patient_name: str
     department: str
@@ -214,6 +218,8 @@ class ChatSessionOut(BaseModel):
 
 class ChatIn(BaseModel):
     message: str = Field(min_length=1, max_length=2000)
+    # UC-09 bước 3: người dùng xác nhận đây không phải tình huống khẩn cấp
+    skip_emergency_check: bool = False
 
 
 class ChatReply(BaseModel):
