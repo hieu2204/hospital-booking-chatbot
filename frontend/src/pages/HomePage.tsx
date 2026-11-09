@@ -35,8 +35,8 @@ import { useChat } from "../chat";
 import DepartmentIcon from "../components/DepartmentIcon";
 import { AnimatedCounter, Reveal, Stagger, staggerItem } from "../components/motion";
 import { Skeleton } from "../components/ui";
+import { initials, scheduleText } from "../format";
 import { SITE, tel } from "../site";
-import type { Doctor } from "../types";
 
 const QUESTIONS = [
   "Không có giấy chuyển tuyến có khám BHYT được không?",
@@ -542,21 +542,7 @@ function GuideSection() {
 /* Đội ngũ bác sĩ                                                      */
 /* ------------------------------------------------------------------ */
 
-const WEEKDAYS = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
 const AVATAR_GRADIENTS = ["from-brand-500 to-brand-700", "from-accent-500 to-accent-700", "from-sky-400 to-brand-600", "from-indigo-400 to-brand-700"];
-
-function scheduleText(doctor: Doctor): string {
-  const parts = doctor.schedule
-    .slice()
-    .sort((a, b) => a.weekday - b.weekday)
-    .map((s) => `${s.shift === "morning" ? "Sáng" : "Chiều"} ${WEEKDAYS[s.weekday]}`);
-  return [...new Set(parts)].slice(0, 3).join(" · ");
-}
-
-function initials(name: string) {
-  const words = name.trim().split(/\s+/);
-  return (words.length > 1 ? words[words.length - 2][0] + words[words.length - 1][0] : words[0][0]).toUpperCase();
-}
 
 function Doctors() {
   const doctors = useDoctors();
@@ -617,7 +603,7 @@ function Doctors() {
                       {scheduleText(doctor) || "Chưa có lịch"}
                     </p>
                     <Link
-                      to={`/booking?department=${doctor.department_id}`}
+                      to={`/booking?doctor=${doctor.id}`}
                       className="mt-4 flex items-center justify-center gap-1.5 rounded-xl bg-brand-50 py-2 text-sm font-semibold text-brand-700 transition group-hover:bg-brand-600 group-hover:text-white"
                     >
                       Đặt lịch <ArrowRight className="h-4 w-4" />

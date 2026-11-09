@@ -1,4 +1,4 @@
-import type { AppointmentStatus, PayerType } from "./types";
+import type { AppointmentStatus, Doctor, PayerType } from "./types";
 
 const TIME_ZONE = "Asia/Ho_Chi_Minh";
 
@@ -68,3 +68,20 @@ export const PAYER_LABEL: Record<PayerType, string> = {
 export const WARNING_LABEL: Record<string, string> = {
   REFERRAL_EXPIRES_BEFORE_VISIT: "Giấy chuyển tuyến hết hạn trước ngày khám, BHYT có thể không được áp dụng.",
 };
+
+const WEEKDAYS = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+
+/** Lịch khám trong tuần của bác sĩ, ví dụ "Sáng T2 · Chiều T4" (weekday 0 là thứ Hai). */
+export function scheduleText(doctor: Doctor, limit = 3): string {
+  const parts = doctor.schedule
+    .slice()
+    .sort((a, b) => a.weekday - b.weekday || a.shift.localeCompare(b.shift))
+    .map((s) => `${s.shift === "morning" ? "Sáng" : "Chiều"} ${WEEKDAYS[s.weekday]}`);
+  return [...new Set(parts)].slice(0, limit).join(" · ");
+}
+
+/** Hai chữ cái đầu của tên đệm và tên, dùng làm ảnh đại diện. */
+export function initials(name: string): string {
+  const words = name.trim().split(/\s+/);
+  return (words.length > 1 ? words[words.length - 2][0] + words[words.length - 1][0] : words[0][0]).toUpperCase();
+}
