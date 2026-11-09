@@ -12,8 +12,12 @@ Cần Docker Desktop đang chạy.
 cp .env.example .env
 docker compose up -d --build
 docker compose exec backend python -m app.seed
+docker compose exec backend python -m app.index_knowledge
 ```
 
+Lần chạy đầu, backend tải mô hình embedding khoảng 2,2 GB (15–20 phút), sau đó lưu trong volume `model_cache`. Chatbot cần `ANTHROPIC_API_KEY` trong `.env`.
+
+- Giao diện: http://localhost:5173
 - API: http://localhost:8000, tài liệu API: http://localhost:8000/docs
 - PostgreSQL: cổng 5433 trên máy
 
@@ -32,5 +36,9 @@ Tài khoản demo (mật khẩu là `SEED_PASSWORD` trong `.env`):
 docker compose exec backend pytest                                        # chạy test
 docker compose exec backend alembic revision --autogenerate -m "mo ta"    # tạo migration
 docker compose exec backend alembic upgrade head                          # áp dụng migration
-docker compose down -v                                                    # xóa cả dữ liệu
+docker compose exec backend python -m app.usage_report                     # chi phí Claude đã dùng
+docker compose exec -e CHAT_MODEL=claude-haiku-5-5 backend python -m evals.chat_smoke   # chạy thử chatbot thật
+docker compose run --rm --no-deps frontend npm run build                  # kiểm tra kiểu và build frontend
+sh tools/screenshots/run.sh                                               # chụp màn hình các trang vào tools/screenshots/out/
+docker compose down -v                                                    # xóa cả dữ liệu và mô hình đã tải
 ```
