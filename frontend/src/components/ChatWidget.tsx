@@ -125,12 +125,13 @@ function Launcher({ onOpen }: { onOpen: () => void }) {
           closeGreeting();
           onOpen();
         }}
-        className="relative flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-600 to-brand-500 py-3 pl-4 pr-5 font-semibold text-white shadow-glow"
+        className="relative flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-600 to-brand-500 p-4 font-semibold text-white shadow-glow sm:py-3 sm:pl-4 sm:pr-5"
+        aria-label="Hỏi trợ lý ảo"
       >
         <span className="absolute inset-0 animate-pulse-ring rounded-full bg-brand-500" aria-hidden />
         <span className="relative flex items-center gap-2">
           <MessageCircle className="h-5 w-5" />
-          Hỏi trợ lý ảo
+          <span className="hidden sm:inline">Hỏi trợ lý ảo</span>
         </span>
       </motion.button>
     </div>

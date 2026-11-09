@@ -6,8 +6,9 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-do
 import { useAuth } from "../auth";
 import { useDepartments } from "../catalog";
 import { SITE, tel } from "../site";
+import { ThemeToggle } from "../theme";
 import ChatWidget from "./ChatWidget";
-import DepartmentIcon from "./DepartmentIcon";
+import DepartmentIcon, { departmentTheme } from "./DepartmentIcon";
 import { PageTransition } from "./motion";
 import { useToast } from "./toast";
 
@@ -129,7 +130,7 @@ function DepartmentsMenu() {
                   to={`/departments/${dept.id}`}
                   className="group flex items-center gap-3 rounded-2xl px-3 py-2.5 transition hover:bg-brand-50"
                 >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-brand-600 group-hover:text-white">
+                  <span className={`flex h-9 w-9 items-center justify-center rounded-xl transition group-hover:scale-110 ${departmentTheme(dept.name).soft}`}>
                     <DepartmentIcon name={dept.name} className="h-4 w-4" />
                   </span>
                   <span className="text-sm font-medium text-slate-700 group-hover:text-brand-700">{dept.name}</span>
@@ -218,6 +219,7 @@ export default function PublicLayout() {
             ))}
           </nav>
           <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2 lg:ml-0">
+            <ThemeToggle />
             <AccountMenu />
             <button className="btn-ghost px-2.5 lg:hidden" onClick={() => setMenu(!menu)} aria-label="Menu" aria-expanded={menu}>
               {menu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -304,7 +306,7 @@ function Footer() {
             <p className="mt-1 text-brand-200">Chọn giờ trước, đến viện đúng giờ, không phải xếp hàng lấy số.</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link to="/booking" className="btn-lg btn bg-white text-brand-700 shadow-lift hover:bg-brand-50">
+            <Link to="/booking" className="btn-lg btn bg-white text-brand-700 shadow-lift hover:bg-brand-50 dark:!bg-white dark:!text-brand-700 dark:hover:!bg-brand-50">
               <CalendarDays className="h-5 w-5" /> Đặt lịch ngay
             </Link>
             <a href={tel(SITE.hotline)} className="btn-lg btn border border-white/20 text-white hover:bg-white/10">

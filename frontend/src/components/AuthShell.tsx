@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { BadgeCheck, Bot, CalendarCheck, MessageCircle, QrCode, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { HospitalBuilding } from "./Illustrations";
+
 const POINTS = [
   { icon: CalendarCheck, text: "Đặt lịch trước, nhận phiếu khám có số thứ tự" },
   { icon: MessageCircle, text: "Trợ lý ảo giải đáp thủ tục, đặt và hủy lịch 24/7" },
@@ -13,7 +15,8 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 /** Minh họa bên trái: vài thẻ nổi xếp chồng, trôi nhẹ. */
 function Illustration() {
   return (
-    <div className="relative mx-auto mt-10 h-56 w-full max-w-sm">
+    <div className="relative mx-auto mt-10 h-72 w-full max-w-sm">
+      <HospitalBuilding tone="onColor" className="absolute inset-x-0 bottom-0 w-full" />
       <motion.div
         animate={{ y: [0, -8, 0] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
@@ -21,7 +24,7 @@ function Illustration() {
       >
         <p className="text-[11px] font-semibold uppercase tracking-wide text-brand-600">Phiếu khám điện tử</p>
         <div className="mt-2 flex items-center gap-3">
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 text-white">
+          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-ink text-white">
             <QrCode className="h-6 w-6" />
           </span>
           <div>
@@ -58,8 +61,8 @@ function Illustration() {
 export default function AuthShell({ title, subtitle, children }: { title: string; subtitle: string; children: ReactNode }) {
   return (
     <div className="relative overflow-hidden">
-      <div className="pointer-events-none absolute -left-40 top-20 h-96 w-96 animate-float rounded-full bg-brand-100/60 blur-3xl" />
-      <div className="pointer-events-none absolute -right-32 bottom-0 h-80 w-80 animate-float-slow rounded-full bg-accent-100/70 blur-3xl" />
+      <div className="pointer-events-none absolute -left-40 top-20 h-96 w-96 animate-float rounded-full bg-brand-100/60 blur-3xl dark:opacity-20" />
+      <div className="pointer-events-none absolute -right-32 bottom-0 h-80 w-80 animate-float-slow rounded-full bg-accent-100/70 blur-3xl dark:opacity-20" />
 
       <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-10 lg:grid-cols-2 lg:py-16">
         <motion.div

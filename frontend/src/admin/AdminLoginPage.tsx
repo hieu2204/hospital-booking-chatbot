@@ -38,7 +38,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-900 px-4">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-ink px-4">
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-20 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
       <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 animate-float rounded-full bg-brand-600/30 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 animate-float-slow rounded-full bg-accent-500/20 blur-3xl" />
@@ -64,7 +64,7 @@ export default function AdminLoginPage() {
             <PasswordInput icon={<KeyRound className="h-4 w-4" />} value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
           <ErrorText error={error} />
-          <button className="btn btn-lg w-full bg-slate-900 text-white hover:bg-slate-800" disabled={busy}>
+          <button className="btn btn-lg w-full bg-ink text-white hover:bg-ink/90 dark:bg-brand-600 dark:hover:bg-brand-700" disabled={busy}>
             {busy && <Loader2 className="h-5 w-5 animate-spin" />} Đăng nhập
           </button>
         </div>

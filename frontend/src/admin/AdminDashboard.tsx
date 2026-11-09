@@ -6,9 +6,13 @@ import { Link } from "react-router-dom";
 import { api } from "../api";
 import { AnimatedCounter } from "../components/motion";
 import { Skeleton, StatusBadge } from "../components/ui";
-import { dateTime, localDate, time } from "../format";
+import { addDays, dateTime, dayLabel, localDate, time } from "../format";
 import type { Appointment } from "../types";
+import { BarList, ColumnChart } from "./charts";
 import { totalCost, type AdminSession, type Usage } from "./shared";
+
+const ACTIVE = ["pending_payment", "confirmed", "completed", "need_reschedule"];
+const WEEK = 7;
 
 const TONES = {
   brand: "from-brand-500 to-brand-700",
@@ -46,6 +50,12 @@ export default function AdminDashboard() {
   const [appointments, setAppointments] = useState<Appointment[] | null>(null);
   const [sessions, setSessions] = useState<AdminSession[] | null>(null);
   const [usage, setUsage] = useState<Usage | null>(null);
+  const [week, setWeek] = useState<{ day: string; items: Appointment[] }[] | null>(null);
+
+  useEffect(() => {
+    const days = Array.from({ length: WEEK }, (_, i) => addDays(today, i));
+    void Promise.all(days.map((day) => api<Appointment[]>(`/admin/appointments?day=${day}`).then((items) => ({ day, items })))).then(setWeek);
+  }, [today]);
 
   useEffect(() => {
     void api<Appointment[]>(`/admin/appointments?day=${today}`).then(setAppointments);
@@ -78,6 +88,36 @@ export default function AdminDashboard() {
           hint={sessions ? `${sessions.filter((s) => s.status === "locked").length} ca đã khóa` : undefined}
         />
         <Stat index={3} tone="indigo" icon={Bot} label="Chi phí trợ lý ảo" text={usage ? `$${totalCost(usage).toFixed(3)}` : undefined} hint={usage ? `${turns} lượt chat từ trước tới nay` : undefined} />
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
+        {week ? (
+          <ColumnChart
+            title="Lịch hẹn 7 ngày tới"
+            subtitle="Lịch còn hiệu lực theo ngày khám, gồm cả chờ thanh toán"
+            unit="lịch hẹn"
+            highlight={today}
+            data={week.map(({ day, items }) => {
+              const label = dayLabel(day);
+              return { key: day, label: day === today ? "Hôm nay" : label.weekday, sub: label.date, value: items.filter((a) => ACTIVE.includes(a.status)).length };
+            })}
+          />
+        ) : (
+          <Skeleton className="h-[300px] rounded-2xl" />
+        )}
+        {week ? (
+          <BarList
+            title="Theo chuyên khoa"
+            subtitle="Lịch còn hiệu lực trong 7 ngày tới"
+            unit="lịch hẹn"
+            empty="Chưa có lịch hẹn nào trong 7 ngày tới."
+            data={Object.entries(
+              week.flatMap((d) => d.items).filter((a) => ACTIVE.includes(a.status)).reduce<Record<string, number>>((acc, a) => ({ ...acc, [a.department]: (acc[a.department] ?? 0) + 1 }), {}),
+            ).map(([department, value]) => ({ key: department, label: department, value }))}
+          />
+        ) : (
+          <Skeleton className="h-[300px] rounded-2xl" />
+        )}
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">

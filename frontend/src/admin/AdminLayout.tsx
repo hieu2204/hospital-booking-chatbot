@@ -8,6 +8,7 @@ import { PageTransition } from "../components/motion";
 import { useToast } from "../components/toast";
 import { initials } from "../format";
 import { SITE } from "../site";
+import { ThemeToggle } from "../theme";
 
 const NAV = [
   { to: "/admin", label: "Tổng quan", icon: LayoutDashboard, end: true },
@@ -80,17 +81,17 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 bg-slate-900 lg:block">{sidebar("admin-nav")}</aside>
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 bg-ink lg:block">{sidebar("admin-nav")}</aside>
       <AnimatePresence>
         {open && (
           <div className="fixed inset-0 z-40 lg:hidden">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setOpen(false)} />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-ink/50 backdrop-blur-sm" onClick={() => setOpen(false)} />
             <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", stiffness: 380, damping: 38 }}
-              className="absolute inset-y-0 left-0 w-64 bg-slate-900 shadow-2xl"
+              className="absolute inset-y-0 left-0 w-64 bg-ink shadow-2xl"
             >
               {sidebar("admin-nav-mobile")}
             </motion.aside>
@@ -102,10 +103,11 @@ export default function AdminLayout() {
           <button className="btn-ghost px-2 lg:hidden" onClick={() => setOpen(!open)} aria-label="Menu">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-          <div className="ml-auto flex items-center gap-2.5 text-sm text-slate-500">
+          <ThemeToggle className="ml-auto" />
+          <div className="flex items-center gap-2.5 text-sm text-slate-500">
             <span className="hidden sm:inline">Đăng nhập:</span>
             <span className="font-medium text-slate-800">{user?.full_name}</span>
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white">{user ? initials(user.full_name) : "?"}</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-slate-50">{user ? initials(user.full_name) : "?"}</span>
           </div>
         </header>
         <main className="px-4 py-8 sm:px-8">

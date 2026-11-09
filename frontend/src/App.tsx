@@ -15,6 +15,7 @@ import DepartmentPage from "./pages/DepartmentPage";
 import DoctorsPage from "./pages/DoctorsPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
+import NotFoundPage from "./pages/NotFoundPage";
 import ProfilesPage from "./pages/ProfilesPage";
 import RegisterPage from "./pages/RegisterPage";
 import TicketPage from "./pages/TicketPage";
@@ -42,7 +43,7 @@ export default function App() {
         <Route path="appointments" element={<RequireAuth><AppointmentsPage /></RequireAuth>} />
         <Route path="appointments/:id/ticket" element={<RequireAuth><TicketPage /></RequireAuth>} />
         <Route path="profiles" element={<RequireAuth><ProfilesPage /></RequireAuth>} />
-        <Route path="*" element={<p className="py-24 text-center text-slate-500">Không tìm thấy trang.</p>} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

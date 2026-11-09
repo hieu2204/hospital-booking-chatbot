@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { api, ApiError } from "../api";
-import DepartmentIcon from "../components/DepartmentIcon";
+import DepartmentIcon, { departmentTheme } from "../components/DepartmentIcon";
+import DoctorAvatar from "../components/DoctorAvatar";
 import SlotPicker from "../components/SlotPicker";
 import { Countdown, ErrorText, Row } from "../components/ui";
 import { dateTime, initials, money, PAYER_LABEL, scheduleText, WARNING_LABEL } from "../format";
@@ -320,7 +321,7 @@ export default function BookingPage() {
                             const active = dept.id === departmentId;
                             return (
                               <ChoiceCard key={dept.id} active={active} onClick={() => setDepartmentId(dept.id)} className="flex items-center gap-3 p-3">
-                                <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition ${active ? "bg-brand-600 text-white shadow-glow" : "bg-brand-50 text-brand-600"}`}>
+                                <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition ${active ? `${departmentTheme(dept.name).solid} shadow-lg` : departmentTheme(dept.name).soft}`}>
                                   <DepartmentIcon name={dept.name} className="h-5 w-5" />
                                 </span>
                                 <span className="text-sm font-medium text-slate-900">{dept.name}</span>
@@ -345,7 +346,9 @@ export default function BookingPage() {
                                 }}
                                 className="flex items-center gap-3 p-3"
                               >
-                                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-sm font-bold text-white">{initials(d.full_name)}</span>
+                                <span className={`h-12 w-12 shrink-0 overflow-hidden rounded-full bg-gradient-to-br ${departmentTheme(deptName.get(d.department_id)).gradient}`}>
+                                  <DoctorAvatar seed={d.id} className="h-full w-full translate-y-1" />
+                                </span>
                                 <span className="min-w-0">
                                   <span className="block truncate text-sm font-semibold text-slate-900">
                                     {d.title} {d.full_name}

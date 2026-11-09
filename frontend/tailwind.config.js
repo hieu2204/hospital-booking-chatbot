@@ -1,12 +1,21 @@
 /** @type {import('tailwindcss').Config} */
+// Thang xám đọc từ biến CSS: giao diện tối chỉ đổi giá trị biến (index.css), không cần lớp dark: ở từng chỗ
+const slate = Object.fromEntries(
+  [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((step) => [step, `rgb(var(--slate-${step}) / <alpha-value>)`]),
+);
+
 export default {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  darkMode: "class",
   theme: {
     extend: {
       fontFamily: {
         sans: ['"Be Vietnam Pro"', "system-ui", "sans-serif"],
       },
       colors: {
+        slate,
+        // Màu tối cố định, không đổi theo giao diện: thanh bên admin, khung mã QR
+        ink: "#0f172a",
         // Xanh y tế: màu chính cho nút, liên kết, phần nhấn mạnh
         brand: {
           50: "#eff6ff",

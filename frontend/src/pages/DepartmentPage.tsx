@@ -5,7 +5,7 @@ import { Link, useParams } from "react-router-dom";
 
 import { useDepartments, useDoctors } from "../catalog";
 import { useChat } from "../chat";
-import DepartmentIcon from "../components/DepartmentIcon";
+import DepartmentIcon, { departmentTheme } from "../components/DepartmentIcon";
 import DoctorCard from "../components/DoctorCard";
 import { AnimatedCounter, Reveal, Stagger, staggerItem } from "../components/motion";
 import { EmptyState, Skeleton } from "../components/ui";
@@ -59,10 +59,24 @@ export default function DepartmentPage() {
 
   return (
     <div>
-      <section className="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-600 to-brand-800 text-white">
+      <section className={`relative overflow-hidden bg-gradient-to-br text-white ${departmentTheme(department?.name).gradient}`}>
         <div className="pointer-events-none absolute inset-0 bg-dots opacity-20" />
         <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 animate-float rounded-full bg-white/10 blur-2xl" />
         <div className="pointer-events-none absolute -bottom-32 left-1/3 h-80 w-80 animate-float-slow rounded-full bg-accent-500/20 blur-3xl" />
+        {/* Khối trang trí: icon khoa lớn trong các vòng tròn đồng tâm */}
+        {department && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="pointer-events-none absolute right-[6%] top-1/2 hidden h-72 w-72 -translate-y-1/2 items-center justify-center lg:flex"
+          >
+            <span className="absolute inset-0 rounded-full border border-white/15" />
+            <span className="absolute inset-8 rounded-full border border-white/20 bg-white/5" />
+            <span className="absolute inset-16 rounded-full bg-white/10" />
+            <DepartmentIcon name={department.name} className="relative h-24 w-24 text-white/80" />
+          </motion.div>
+        )}
         <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-8">
           <Link to="/doctors" className="inline-flex items-center gap-1.5 text-sm text-brand-100 transition hover:-translate-x-0.5 hover:text-white">
             <ArrowLeft className="h-4 w-4" /> Tất cả bác sĩ
@@ -89,7 +103,7 @@ export default function DepartmentPage() {
             </div>
           </div>
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="mt-8 flex flex-wrap gap-3">
-            <Link to={`/booking?department=${id}`} className="btn btn-lg bg-white text-brand-700 shadow-lift hover:bg-brand-50">
+            <Link to={`/booking?department=${id}`} className="btn btn-lg bg-white text-brand-700 shadow-lift hover:bg-brand-50 dark:!bg-white dark:!text-brand-700">
               <CalendarCheck className="h-5 w-5" /> Đặt lịch khám khoa này
             </Link>
             {department && (
@@ -195,7 +209,7 @@ export default function DepartmentPage() {
           ) : (
             <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {deptDoctors.map((doctor, index) => (
-                <DoctorCard key={doctor.id} doctor={doctor} index={index} />
+                <DoctorCard key={doctor.id} doctor={doctor} departmentName={department?.name} showDepartment={false} index={index} />
               ))}
             </div>
           )}
@@ -210,7 +224,7 @@ export default function DepartmentPage() {
               {others.map((d) => (
                 <motion.div key={d.id} variants={staggerItem}>
                   <Link to={`/departments/${d.id}`} className="group card flex items-center gap-3 p-4 transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-ring">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 transition group-hover:bg-brand-600 group-hover:text-white">
+                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition group-hover:scale-110 ${departmentTheme(d.name).soft}`}>
                       <DepartmentIcon name={d.name} className="h-5 w-5" />
                     </span>
                     <span className="flex-1 text-sm font-medium text-slate-900">{d.name}</span>

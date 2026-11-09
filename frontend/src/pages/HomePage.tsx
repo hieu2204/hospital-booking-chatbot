@@ -32,10 +32,11 @@ import { Link } from "react-router-dom";
 
 import { useDepartments, useDoctors } from "../catalog";
 import { useChat } from "../chat";
-import DepartmentIcon from "../components/DepartmentIcon";
+import DepartmentIcon, { departmentTheme } from "../components/DepartmentIcon";
+import DoctorAvatar from "../components/DoctorAvatar";
 import { AnimatedCounter, Reveal, Stagger, staggerItem } from "../components/motion";
 import { Skeleton } from "../components/ui";
-import { initials, scheduleText } from "../format";
+import { scheduleText } from "../format";
 import { SITE, tel } from "../site";
 
 const QUESTIONS = [
@@ -131,7 +132,7 @@ function HeroChat() {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0, y: [0, -8, 0] }}
         transition={{ opacity: { delay: 0.8 }, x: { delay: 0.8 }, y: { duration: 5, repeat: Infinity, ease: "easeInOut" } }}
-        className="absolute -right-4 -top-7 hidden items-center gap-2.5 rounded-2xl border border-slate-100 bg-white px-3.5 py-2.5 shadow-lift sm:flex"
+        className="absolute -top-8 right-6 hidden items-center gap-2.5 rounded-2xl border border-slate-100 bg-white px-3.5 py-2.5 shadow-lift sm:flex"
       >
         <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
           <BadgeCheck className="h-4 w-4" />
@@ -145,7 +146,7 @@ function HeroChat() {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0, y: [0, 8, 0] }}
         transition={{ opacity: { delay: 1 }, x: { delay: 1 }, y: { duration: 6, repeat: Infinity, ease: "easeInOut" } }}
-        className="absolute -bottom-7 -left-8 hidden items-center gap-2.5 rounded-2xl border border-slate-100 bg-white px-3.5 py-2.5 shadow-lift sm:flex"
+        className="absolute -bottom-9 -right-6 hidden items-center gap-2.5 rounded-2xl border border-slate-100 bg-white px-3.5 py-2.5 shadow-lift sm:flex"
       >
         <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
           <QrCode className="h-4 w-4" />
@@ -173,8 +174,8 @@ function Hero() {
     <section className="relative overflow-hidden bg-gradient-to-b from-brand-50 via-white to-white">
       {/* Nền: lưới mờ và hai đốm màu trôi chậm */}
       <div className="pointer-events-none absolute inset-0 bg-grid [mask-image:radial-gradient(ellipse_at_top,black_30%,transparent_70%)]" />
-      <div className="pointer-events-none absolute -left-40 -top-40 h-[28rem] w-[28rem] animate-float rounded-full bg-brand-200/50 blur-3xl" />
-      <div className="pointer-events-none absolute -right-32 top-20 h-[24rem] w-[24rem] animate-float-slow rounded-full bg-accent-100/80 blur-3xl" />
+      <div className="pointer-events-none absolute -left-40 -top-40 h-[28rem] w-[28rem] animate-float rounded-full bg-brand-200/50 blur-3xl dark:opacity-20" />
+      <div className="pointer-events-none absolute -right-32 top-20 h-[24rem] w-[24rem] animate-float-slow rounded-full bg-accent-100/80 blur-3xl dark:opacity-20" />
 
       <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-4 pb-24 pt-14 lg:grid-cols-[1.1fr_1fr] lg:pb-32 lg:pt-20">
         <div>
@@ -219,7 +220,7 @@ function Hero() {
       </div>
 
       {/* Sóng chuyển sang phần dưới */}
-      <svg className="absolute bottom-0 left-0 h-12 w-full text-white" viewBox="0 0 1440 48" preserveAspectRatio="none" aria-hidden>
+      <svg className="absolute bottom-0 left-0 h-12 w-full text-white dark:text-[rgb(9_15_28)]" viewBox="0 0 1440 48" preserveAspectRatio="none" aria-hidden>
         <path fill="currentColor" d="M0 48h1440V20c-180 18-420 28-720 8S180 8 0 24v24Z" />
       </svg>
     </section>
@@ -331,26 +332,30 @@ function Departments() {
         </div>
       ) : (
         <Stagger className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {list.map((dept) => (
-            <motion.div key={dept.id} variants={staggerItem}>
-              <Link
-                to={`/departments/${dept.id}`}
-                className="group card relative flex h-full flex-col gap-3 overflow-hidden p-5 transition duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-ring"
-              >
-                <span className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-brand-50 opacity-0 transition duration-500 group-hover:scale-150 group-hover:opacity-100" />
-                <span className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 transition duration-300 group-hover:bg-brand-600 group-hover:text-white group-hover:shadow-glow">
-                  <DepartmentIcon name={dept.name} />
-                </span>
-                <span className="relative">
-                  <span className="block font-semibold text-slate-900">{dept.name}</span>
-                  <span className="mt-0.5 line-clamp-2 block text-xs text-slate-500">{dept.description}</span>
-                </span>
-                <span className="relative mt-auto flex items-center gap-1 text-xs font-semibold text-brand-600 opacity-0 transition group-hover:opacity-100">
-                  Xem chi tiết khoa <ArrowRight className="h-3.5 w-3.5" />
-                </span>
-              </Link>
-            </motion.div>
-          ))}
+          {list.map((dept) => {
+            const theme = departmentTheme(dept.name);
+            return (
+              <motion.div key={dept.id} variants={staggerItem}>
+                <Link
+                  to={`/departments/${dept.id}`}
+                  className={`group card relative flex h-full flex-col gap-3 overflow-hidden p-5 transition duration-300 hover:-translate-y-1 hover:shadow-ring ${theme.hoverBorder}`}
+                >
+                  <span className={`absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-0 transition duration-500 group-hover:scale-150 group-hover:opacity-100 ${theme.soft}`} />
+                  <span className={`relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl transition duration-300 group-hover:text-white ${theme.soft}`}>
+                    <span className={`absolute inset-0 bg-gradient-to-br opacity-0 transition duration-300 group-hover:opacity-100 ${theme.gradient}`} />
+                    <DepartmentIcon name={dept.name} className="relative h-6 w-6" />
+                  </span>
+                  <span className="relative">
+                    <span className="block font-semibold text-slate-900">{dept.name}</span>
+                    <span className="mt-0.5 line-clamp-2 block text-xs text-slate-500">{dept.description}</span>
+                  </span>
+                  <span className={`relative mt-auto flex items-center gap-1 text-xs font-semibold opacity-0 transition group-hover:opacity-100 ${theme.text}`}>
+                    Xem chi tiết khoa <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </Link>
+              </motion.div>
+            );
+          })}
         </Stagger>
       )}
     </section>
@@ -418,9 +423,9 @@ function WhyUs() {
                 </div>
               </div>
               <div className="mt-5 flex items-center gap-4 border-t border-dashed border-slate-200 pt-5">
-                <div className="grid h-16 w-16 grid-cols-5 gap-0.5 rounded-lg bg-slate-900 p-1.5">
+                <div className="grid h-16 w-16 grid-cols-5 gap-0.5 rounded-lg bg-ink p-1.5">
                   {"1011001101110100110101101".split("").map((bit, i) => (
-                    <span key={i} className={bit === "1" ? "bg-white" : ""} />
+                    <span key={i} className={bit === "1" ? "bg-[#fff]" : ""} />
                   ))}
                 </div>
                 <p className="text-xs text-slate-500">Đưa mã QR tại quầy tiếp nhận hoặc phòng khám để xác nhận.</p>
@@ -542,8 +547,6 @@ function GuideSection() {
 /* Đội ngũ bác sĩ                                                      */
 /* ------------------------------------------------------------------ */
 
-const AVATAR_GRADIENTS = ["from-brand-500 to-brand-700", "from-accent-500 to-accent-700", "from-sky-400 to-brand-600", "from-indigo-400 to-brand-700"];
-
 function Doctors() {
   const doctors = useDoctors();
   const departments = useDepartments();
@@ -589,12 +592,13 @@ function Doctors() {
             >
               {doctor ? (
                 <>
-                  <div className={`relative flex h-36 items-center justify-center bg-gradient-to-br ${AVATAR_GRADIENTS[index % AVATAR_GRADIENTS.length]}`}>
+                  <div className={`relative flex h-40 items-end justify-center overflow-hidden bg-gradient-to-br ${departmentTheme(deptName.get(doctor.department_id)).gradient}`}>
                     <div className="absolute inset-0 bg-dots opacity-30" />
-                    <span className="relative flex h-20 w-20 items-center justify-center rounded-full bg-white/20 text-2xl font-bold text-white ring-4 ring-white/30 backdrop-blur transition duration-500 group-hover:scale-110">
-                      {initials(doctor.full_name)}
+                    <span className="absolute -left-8 -top-8 h-28 w-28 rounded-full bg-white/10" />
+                    <span className="relative h-32 w-32 transition duration-500 group-hover:-translate-y-1 group-hover:scale-105">
+                      <DoctorAvatar seed={doctor.id} />
                     </span>
-                    <span className="absolute bottom-3 left-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-brand-700">
+                    <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-ink">
                       {deptName.get(doctor.department_id) ?? "Chuyên khoa"}
                     </span>
                   </div>

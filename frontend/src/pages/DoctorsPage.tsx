@@ -44,7 +44,7 @@ export default function DoctorsPage() {
     <div>
       <section className="relative overflow-hidden bg-gradient-to-b from-brand-50 to-white">
         <div className="pointer-events-none absolute inset-0 bg-grid [mask-image:radial-gradient(ellipse_at_top,black_20%,transparent_70%)]" />
-        <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 animate-float rounded-full bg-accent-100/70 blur-3xl" />
+        <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 animate-float rounded-full bg-accent-100/70 blur-3xl dark:opacity-20" />
         <div className="relative mx-auto max-w-6xl px-4 pb-10 pt-12">
           <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="eyebrow flex items-center gap-2">
             <span className="h-px w-6 bg-brand-500" /> Đội ngũ
@@ -79,7 +79,7 @@ export default function DoctorsPage() {
               <button
                 key={value ?? "all"}
                 onClick={() => setWeekday(value)}
-                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${weekday === value ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${weekday === value ? "bg-slate-900 text-slate-50" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
               >
                 {value === null ? "Bất kỳ" : WEEKDAYS[value]}
               </button>
