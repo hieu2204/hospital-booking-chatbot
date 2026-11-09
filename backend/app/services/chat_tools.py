@@ -198,7 +198,21 @@ def list_departments(ctx: ToolContext) -> dict:
 
 
 def suggest_department(ctx: ToolContext, symptoms: str) -> dict:
-    return triage.suggest_departments(ctx.db, symptoms)
+    result = triage.suggest_departments(ctx.db, symptoms)
+    if any(item["matched"] for item in result["suggestions"]):
+        return result
+    # BR-29a: bảng không khớp cụm nào thì đưa danh sách khoa để bot tự chọn theo mô tả,
+    # khoa Khám bệnh chỉ là phương án cuối chứ không phải đáp án mặc định
+    departments = ctx.db.execute(select(Department.id, Department.name, Department.description)).all()
+    return {
+        "no_match": True,
+        "note": (
+            "Bảng triệu chứng không khớp cụm nào. Hãy tự chọn 1-2 khoa phù hợp nhất theo mô tả "
+            "dưới đây. Chỉ chọn Khám bệnh khi mô tả chung chung, không chỉ ra được cơ quan nào."
+        ),
+        "departments": [{"department_id": i, "department": n, "description": d} for i, n, d in departments],
+        "disclaimer": result["disclaimer"],
+    }
 
 
 def get_doctors(ctx: ToolContext, department_id: int) -> list[dict]:

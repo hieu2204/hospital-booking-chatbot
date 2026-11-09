@@ -316,9 +316,10 @@ Ngoại lệ chính: không tìm thấy thì nói rõ không có thông tin và 
 1. Người dùng mô tả triệu chứng.
 2. Bot hỏi thêm tối đa 2 câu nếu mô tả chưa đủ.
 3. Bot gọi `suggest_department`, tool này tra bảng ánh xạ triệu chứng sang khoa.
-4. Bot đưa ra 1–2 khoa kèm lưu ý "Chỉ là gợi ý, không thay thế chẩn đoán của bác sĩ", rồi mời đặt lịch.
+4. Bảng không khớp cụm nào thì tool trả kèm danh sách khoa và mô tả từng khoa; bot tự chọn khoa phù hợp nhất theo mô tả (BR-29a).
+5. Bot đưa ra 1–2 khoa kèm lưu ý "Chỉ là gợi ý, không thay thế chẩn đoán của bác sĩ", rồi mời đặt lịch.
 
-Ngoại lệ chính: không xác định được khoa thì gợi ý khoa Khám bệnh để bác sĩ khám ban đầu chuyển khoa phù hợp.
+Ngoại lệ chính: mô tả chung chung, không chỉ ra được cơ quan nào (ví dụ "mệt mỏi, không rõ khám khoa nào") thì gợi ý khoa Khám bệnh để bác sĩ khám ban đầu chuyển khoa phù hợp.
 
 ### UC-09: Cảnh báo cấp cứu
 

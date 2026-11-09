@@ -107,3 +107,26 @@ def test_uc09_api_kiem_tra_cap_cuu(client):
     body = client.post("/triage/emergency-check", json={"message": "bố tôi bất tỉnh"}).json()
     assert body["is_emergency"] is True
     assert body["category"] == "bat_tinh"
+
+
+def test_br29a_khong_khop_bang_thi_tool_tra_danh_sach_khoa(client, world):
+    """Bảng không khớp: bot nhận danh sách khoa để tự chọn, không bị ép trả lời Khám bệnh."""
+    from app.db import SessionLocal
+    from app.services.chat_tools import ToolContext, suggest_department
+
+    with SessionLocal() as db:
+        ctx = ToolContext(db=db, user_id=None, chat_session_id=None)
+        result = suggest_department(ctx, "nuốt nước bọt thấy đau rát cổ, giọng bị khàn")
+        assert result["no_match"] is True
+        assert world.department.name in [d["department"] for d in result["departments"]]
+        assert "không thay thế chẩn đoán" in result["disclaimer"]
+
+
+def test_br29a_khop_bang_thi_giu_goi_y_cu(client, world):
+    from app.db import SessionLocal
+    from app.services.chat_tools import ToolContext, suggest_department
+
+    with SessionLocal() as db:
+        result = suggest_department(ToolContext(db=db, user_id=None, chat_session_id=None), "mình bị đau dạ dày")
+        assert "no_match" not in result
+        assert result["suggestions"][0]["department"] == "Tiêu hóa"
