@@ -2,6 +2,7 @@ import { Bot, Library, Loader2, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { api, ApiError } from "../api";
+import { useToast } from "../components/toast";
 import { ErrorText } from "../components/ui";
 import { money } from "../format";
 import { totalCost, type Usage } from "./shared";
@@ -10,6 +11,7 @@ const USD_TO_VND = 25000;
 
 /** FR-27 và theo dõi chi phí Claude (NFR-10). */
 export default function AdminSystemPage() {
+  const toast = useToast();
   const [usage, setUsage] = useState<Usage | null>(null);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -22,6 +24,7 @@ export default function AdminSystemPage() {
     try {
       const data = await api<{ files: number; changed: number; archived: number }>("/admin/knowledge/reindex", { method: "POST" });
       setResult(`${data.files} tài liệu · index lại ${data.changed} · lưu trữ ${data.archived}`);
+      toast("Đã index lại kho tri thức");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Không index được");
     } finally {

@@ -1,19 +1,41 @@
+import { motion } from "framer-motion";
 import { Info, Lock } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { api, ApiError } from "../api";
-import { ErrorText } from "../components/ui";
+import { useToast } from "../components/toast";
+import { ErrorText, Skeleton } from "../components/ui";
 import { addDays, localDate } from "../format";
 import type { Doctor } from "../types";
 import type { AdminSession } from "./shared";
 
+function SkeletonRows({ cols }: { cols: number }) {
+  return (
+    <>
+      {Array.from({ length: 5 }, (_, i) => (
+        <tr key={i}>
+          {Array.from({ length: cols }, (_, j) => (
+            <td key={j} className="px-5 py-4">
+              <Skeleton className="h-4" />
+            </td>
+          ))}
+        </tr>
+      ))}
+    </>
+  );
+}
+
 /** FR-25: ca khám theo ngày, khóa ca hoặc chỉ định bác sĩ khám thay (BR-09, BR-10, BR-28a). */
 export default function AdminSessionsPage() {
   const [day, setDay] = useState(addDays(localDate(new Date()), 1));
-  const [sessions, setSessions] = useState<AdminSession[]>([]);
+  const toast = useToast();
+  const [sessions, setSessions] = useState<AdminSession[] | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const load = useCallback(() => void api<AdminSession[]>(`/admin/sessions?day=${day}`).then(setSessions), [day]);
+  const load = useCallback(() => {
+    setSessions(null);
+    void api<AdminSession[]>(`/admin/sessions?day=${day}`).then(setSessions);
+  }, [day]);
   useEffect(load, [load]);
   useEffect(() => void api<Doctor[]>("/doctors").then(setDoctors), []);
 
@@ -21,6 +43,7 @@ export default function AdminSessionsPage() {
     setError(null);
     try {
       await api(`/admin/sessions/${session.id}/lock`, { body: { substitute_doctor_id: substituteId } });
+      toast(substituteId ? "Đã chỉ định bác sĩ khám thay" : "Đã khóa ca, các lịch hẹn chuyển sang Cần đổi lịch");
       load();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Không thực hiện được");
@@ -54,8 +77,15 @@ export default function AdminSessionsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {sessions.map((s) => (
-              <tr key={s.id} className={s.status === "locked" ? "bg-slate-50 text-slate-400" : ""}>
+            {sessions === null && <SkeletonRows cols={6} />}
+            {sessions?.map((s, i) => (
+              <motion.tr
+                key={s.id}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: Math.min(i, 12) * 0.03 }}
+                className={`transition-colors ${s.status === "locked" ? "bg-slate-50 text-slate-400" : "hover:bg-slate-50/70"}`}
+              >
                 <td className="px-5 py-3.5">
                   <span className="block font-medium text-slate-900">{s.department}</span>
                   <span className="text-xs text-slate-500">{s.room}</span>
@@ -91,11 +121,11 @@ export default function AdminSessionsPage() {
                     </div>
                   )}
                 </td>
-              </tr>
+              </motion.tr>
             ))}
           </tbody>
         </table>
-        {sessions.length === 0 && <p className="p-5 text-sm text-slate-500">Không có ca khám trong ngày này.</p>}
+        {sessions?.length === 0 && <p className="p-5 text-sm text-slate-500">Không có ca khám trong ngày này.</p>}
       </div>
     </div>
   );

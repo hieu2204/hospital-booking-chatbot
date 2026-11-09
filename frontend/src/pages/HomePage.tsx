@@ -334,7 +334,7 @@ function Departments() {
           {list.map((dept) => (
             <motion.div key={dept.id} variants={staggerItem}>
               <Link
-                to={`/booking?department=${dept.id}`}
+                to={`/departments/${dept.id}`}
                 className="group card relative flex h-full flex-col gap-3 overflow-hidden p-5 transition duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-ring"
               >
                 <span className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-brand-50 opacity-0 transition duration-500 group-hover:scale-150 group-hover:opacity-100" />
@@ -346,7 +346,7 @@ function Departments() {
                   <span className="mt-0.5 line-clamp-2 block text-xs text-slate-500">{dept.description}</span>
                 </span>
                 <span className="relative mt-auto flex items-center gap-1 text-xs font-semibold text-brand-600 opacity-0 transition group-hover:opacity-100">
-                  Xem lịch trống <ArrowRight className="h-3.5 w-3.5" />
+                  Xem chi tiết khoa <ArrowRight className="h-3.5 w-3.5" />
                 </span>
               </Link>
             </motion.div>
@@ -564,7 +564,10 @@ function Doctors() {
       <div className="mx-auto max-w-6xl px-4">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <SectionHeading eyebrow="Đội ngũ" title="Bác sĩ khám theo lịch cố định trong tuần" text="Tên bác sĩ trong bản demo là giả định." />
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <Link to="/doctors" className="btn-ghost mr-1 text-brand-700">
+              Xem tất cả <ArrowRight className="h-4 w-4" />
+            </Link>
             <button className="btn-secondary h-11 w-11 rounded-full p-0" onClick={() => scroll(-1)} aria-label="Xem trước">
               <ChevronLeft className="h-5 w-5" />
             </button>

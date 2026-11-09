@@ -11,6 +11,8 @@ import { ChatProvider } from "./chat";
 import PublicLayout from "./components/PublicLayout";
 import AppointmentsPage from "./pages/AppointmentsPage";
 import BookingPage from "./pages/BookingPage";
+import DepartmentPage from "./pages/DepartmentPage";
+import DoctorsPage from "./pages/DoctorsPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import ProfilesPage from "./pages/ProfilesPage";
@@ -32,6 +34,8 @@ export default function App() {
       {/* Khu vực người bệnh: website kèm trợ lý ảo dạng bong bóng */}
       <Route element={<ChatProvider><PublicLayout /></ChatProvider>}>
         <Route index element={<HomePage />} />
+        <Route path="doctors" element={<DoctorsPage />} />
+        <Route path="departments/:id" element={<DepartmentPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="booking" element={<RequireAuth><BookingPage /></RequireAuth>} />

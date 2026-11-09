@@ -13,6 +13,7 @@ import { useToast } from "./toast";
 
 const NAV = [
   { to: "/", label: "Trang chủ", end: true },
+  { to: "/doctors", label: "Bác sĩ" },
   { to: "/booking", label: "Đặt lịch khám" },
   { to: "/#huong-dan", label: "Hướng dẫn" },
   { to: "/appointments", label: "Lịch hẹn của tôi" },
@@ -60,7 +61,7 @@ function AccountMenu() {
     <div ref={ref} className="relative">
       <button className="flex items-center gap-2 rounded-xl py-1.5 pl-1.5 pr-2.5 transition hover:bg-slate-100" onClick={() => setOpen(!open)}>
         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-brand-100 to-accent-100 text-sm font-bold text-brand-700">{initials}</span>
-        <span className="hidden text-sm font-medium text-slate-700 sm:block">{user.full_name}</span>
+        <span className="hidden max-w-[10rem] truncate text-sm font-medium text-slate-700 sm:block lg:hidden xl:block">{user.full_name}</span>
         <ChevronDown className={`h-4 w-4 text-slate-400 transition ${open ? "rotate-180" : ""}`} />
       </button>
       <AnimatePresence>
@@ -106,7 +107,7 @@ function DepartmentsMenu() {
   return (
     <div className="relative" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
       <button
-        className="flex items-center gap-1 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-600 transition hover:text-slate-900"
+        className="flex items-center gap-1 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium text-slate-600 transition hover:text-slate-900"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
       >
@@ -125,7 +126,7 @@ function DepartmentsMenu() {
               {departments.map((dept) => (
                 <Link
                   key={dept.id}
-                  to={`/booking?department=${dept.id}`}
+                  to={`/departments/${dept.id}`}
                   className="group flex items-center gap-3 rounded-2xl px-3 py-2.5 transition hover:bg-brand-50"
                 >
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-brand-600 group-hover:text-white">
@@ -273,7 +274,7 @@ function NavItem({ to, label, end }: { to: string; label: string; end?: boolean 
     <NavLink
       to={to}
       end={end}
-      className={`relative rounded-xl px-3.5 py-2 text-sm font-medium transition ${active ? "text-brand-700" : "text-slate-600 hover:text-slate-900"}`}
+      className={`relative whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition ${active ? "text-brand-700" : "text-slate-600 hover:text-slate-900"}`}
     >
       {label}
       {active && (
@@ -328,7 +329,7 @@ function Footer() {
             <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 lg:grid-cols-1">
               {departments.slice(0, 6).map((dept) => (
                 <li key={dept.id}>
-                  <Link to={`/booking?department=${dept.id}`} className="transition hover:text-white">
+                  <Link to={`/departments/${dept.id}`} className="transition hover:text-white">
                     {dept.name}
                   </Link>
                 </li>

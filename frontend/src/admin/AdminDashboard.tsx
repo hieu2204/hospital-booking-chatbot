@@ -1,32 +1,50 @@
-import { Bot, CalendarCheck, CalendarRange, Clock, type LucideIcon } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, Bot, CalendarCheck, CalendarRange, Clock, type LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { api } from "../api";
-import { StatusBadge } from "../components/ui";
+import { AnimatedCounter } from "../components/motion";
+import { Skeleton, StatusBadge } from "../components/ui";
 import { dateTime, localDate, time } from "../format";
 import type { Appointment } from "../types";
 import { totalCost, type AdminSession, type Usage } from "./shared";
 
-function Stat({ icon: Icon, label, value, hint }: { icon: LucideIcon; label: string; value: string; hint?: string }) {
+const TONES = {
+  brand: "from-brand-500 to-brand-700",
+  amber: "from-amber-400 to-amber-600",
+  accent: "from-accent-500 to-accent-700",
+  indigo: "from-indigo-400 to-indigo-600",
+};
+
+function Stat({ icon: Icon, label, value, text, hint, tone, index }: { icon: LucideIcon; label: string; value?: number; text?: string; hint?: string; tone: keyof typeof TONES; index: number }) {
+  const loading = value === undefined && text === undefined;
   return (
-    <div className="card p-5">
-      <div className="flex items-center justify-between">
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.07, duration: 0.4 }}
+      className="card group relative overflow-hidden p-5 transition hover:-translate-y-0.5 hover:shadow-ring"
+    >
+      <span className={`pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-gradient-to-br opacity-10 transition group-hover:scale-125 ${TONES[tone]}`} />
+      <div className="relative flex items-center justify-between">
         <p className="text-sm font-medium text-slate-500">{label}</p>
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+        <span className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-sm ${TONES[tone]}`}>
           <Icon className="h-[18px] w-[18px]" />
         </span>
       </div>
-      <p className="mt-3 text-3xl font-bold text-slate-900">{value}</p>
-      {hint && <p className="mt-1 text-xs text-slate-500">{hint}</p>}
-    </div>
+      <p className="relative mt-3 text-3xl font-bold text-slate-900">
+        {loading ? <Skeleton className="h-9 w-16" /> : text ?? <AnimatedCounter value={value!} />}
+      </p>
+      {hint && <p className="relative mt-1 text-xs text-slate-500">{hint}</p>}
+    </motion.div>
   );
 }
 
 export default function AdminDashboard() {
   const today = localDate(new Date());
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [sessions, setSessions] = useState<AdminSession[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[] | null>(null);
+  const [sessions, setSessions] = useState<AdminSession[] | null>(null);
   const [usage, setUsage] = useState<Usage | null>(null);
 
   useEffect(() => {
@@ -35,10 +53,11 @@ export default function AdminDashboard() {
     void api<Usage>("/admin/usage").then(setUsage);
   }, [today]);
 
-  const confirmed = appointments.filter((a) => a.status === "confirmed" || a.status === "completed").length;
-  const pending = appointments.filter((a) => a.status === "pending_payment").length;
+  const list = appointments ?? [];
+  const confirmed = list.filter((a) => a.status === "confirmed" || a.status === "completed").length;
+  const pending = list.filter((a) => a.status === "pending_payment").length;
   const turns = Object.values(usage ?? {}).reduce((sum, row) => sum + row.turns, 0);
-  const busiest = [...sessions].sort((a, b) => b.booked / b.capacity - a.booked / a.capacity).slice(0, 5);
+  const busiest = [...(sessions ?? [])].sort((a, b) => b.booked / b.capacity - a.booked / a.capacity).slice(0, 5);
 
   return (
     <div className="space-y-8">
@@ -48,60 +67,99 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat icon={CalendarCheck} label="Lịch hẹn hôm nay" value={String(appointments.length)} hint={`${confirmed} đã xác nhận`} />
-        <Stat icon={Clock} label="Chờ thanh toán" value={String(pending)} hint="Tự hủy sau 15 phút giữ chỗ" />
-        <Stat icon={CalendarRange} label="Ca khám hôm nay" value={String(sessions.length)} hint={`${sessions.filter((s) => s.status === "locked").length} ca đã khóa`} />
-        <Stat icon={Bot} label="Chi phí trợ lý ảo" value={`$${totalCost(usage).toFixed(3)}`} hint={`${turns} lượt chat từ trước tới nay`} />
+        <Stat index={0} tone="brand" icon={CalendarCheck} label="Lịch hẹn hôm nay" value={appointments?.length} hint={appointments ? `${confirmed} đã xác nhận` : undefined} />
+        <Stat index={1} tone="amber" icon={Clock} label="Chờ thanh toán" value={appointments ? pending : undefined} hint="Tự hủy sau 15 phút giữ chỗ" />
+        <Stat
+          index={2}
+          tone="accent"
+          icon={CalendarRange}
+          label="Ca khám hôm nay"
+          value={sessions?.length}
+          hint={sessions ? `${sessions.filter((s) => s.status === "locked").length} ca đã khóa` : undefined}
+        />
+        <Stat index={3} tone="indigo" icon={Bot} label="Chi phí trợ lý ảo" text={usage ? `$${totalCost(usage).toFixed(3)}` : undefined} hint={usage ? `${turns} lượt chat từ trước tới nay` : undefined} />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
-        <div className="card overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="card overflow-hidden">
+          <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
             <h2 className="font-semibold">Lịch hẹn hôm nay</h2>
-            <Link to="/admin/appointments" className="text-sm font-medium text-brand-600 hover:underline">Xem tất cả</Link>
+            <Link to="/admin/appointments" className="group flex items-center gap-1 text-sm font-medium text-brand-600 hover:underline">
+              Xem tất cả <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
+            </Link>
           </div>
-          {appointments.length === 0 ? (
-            <p className="px-5 pb-5 text-sm text-slate-500">Hôm nay chưa có lịch hẹn nào.</p>
+          {appointments === null ? (
+            <div className="space-y-3 p-5">
+              {Array.from({ length: 4 }, (_, i) => (
+                <Skeleton key={i} className="h-10" />
+              ))}
+            </div>
+          ) : list.length === 0 ? (
+            <p className="px-5 py-8 text-center text-sm text-slate-500">Hôm nay chưa có lịch hẹn nào.</p>
           ) : (
             <ul className="divide-y divide-slate-100">
-              {appointments.slice(0, 8).map((a) => (
-                <li key={a.id} className="flex items-center gap-4 px-5 py-3 text-sm">
-                  <span className="w-12 font-semibold text-slate-900">{time(a.slot_time)}</span>
-                  <span className="flex-1">
-                    <span className="block font-medium text-slate-900">{a.patient_name}</span>
-                    <span className="block text-xs text-slate-500">{a.department} · {a.doctor_name}</span>
+              {list.slice(0, 8).map((a, i) => (
+                <motion.li
+                  key={a.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.25 + i * 0.04 }}
+                  className="flex items-center gap-4 px-5 py-3 text-sm transition hover:bg-slate-50"
+                >
+                  <span className="w-12 font-semibold tabular-nums text-slate-900">{time(a.slot_time)}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-medium text-slate-900">{a.patient_name}</span>
+                    <span className="block truncate text-xs text-slate-500">
+                      {a.department} · {a.doctor_name}
+                    </span>
                   </span>
                   <StatusBadge status={a.status} />
-                </li>
+                </motion.li>
               ))}
             </ul>
           )}
-        </div>
+        </motion.div>
 
-        <div className="card p-5">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }} className="card p-5">
           <h2 className="font-semibold">Ca khám đông nhất hôm nay</h2>
-          {busiest.length === 0 ? (
+          {sessions === null ? (
+            <div className="mt-4 space-y-4">
+              {Array.from({ length: 4 }, (_, i) => (
+                <Skeleton key={i} className="h-10" />
+              ))}
+            </div>
+          ) : busiest.length === 0 ? (
             <p className="mt-3 text-sm text-slate-500">Không có ca khám hôm nay.</p>
           ) : (
             <ul className="mt-4 space-y-4">
-              {busiest.map((s) => {
+              {busiest.map((s, i) => {
                 const percent = Math.round((s.booked / s.capacity) * 100);
+                const color = percent >= 90 ? "from-rose-400 to-rose-600" : percent >= 60 ? "from-amber-400 to-amber-500" : "from-brand-400 to-brand-600";
                 return (
                   <li key={s.id} className="text-sm">
                     <div className="flex justify-between">
                       <span className="font-medium text-slate-900">{s.department}</span>
-                      <span className="text-slate-500">{s.booked}/{s.capacity}</span>
+                      <span className="tabular-nums text-slate-500">
+                        {s.booked}/{s.capacity}
+                      </span>
                     </div>
-                    <p className="text-xs text-slate-500">{s.start_time}–{s.end_time} · {s.doctor}</p>
+                    <p className="text-xs text-slate-500">
+                      {s.start_time}–{s.end_time} · {s.doctor}
+                    </p>
                     <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-slate-100">
-                      <div className="h-full rounded-full bg-brand-500" style={{ width: `${Math.max(percent, 2)}%` }} />
+                      <motion.div
+                        className={`h-full rounded-full bg-gradient-to-r ${color}`}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.max(percent, 2)}%` }}
+                        transition={{ duration: 0.9, delay: 0.35 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                      />
                     </div>
                   </li>
                 );
               })}
             </ul>
           )}
-        </div>
+        </motion.div>
       </div>
     </div>
   );
