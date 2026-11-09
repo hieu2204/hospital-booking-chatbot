@@ -313,6 +313,9 @@ class BookingDraft(Base):
     session_id: Mapped[int] = mapped_column(ForeignKey("sessions.id"))
     slot_time: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     payer_type: Mapped[PayerType] = mapped_column(enum_type(PayerType))
+    referral_expiry: Mapped[date | None] = mapped_column(Date)
+    symptoms: Mapped[str | None] = mapped_column(Text)
+    bhyt_consent: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false())
     status: Mapped[DraftStatus] = mapped_column(enum_type(DraftStatus), default=DraftStatus.open)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
@@ -344,5 +347,7 @@ class DocumentChunk(Base):
     chunk_index: Mapped[int] = mapped_column(Integer)
     text: Mapped[str] = mapped_column(Text)
     embedding: Mapped[list[float] | None] = mapped_column(Vector(EMBEDDING_DIM))
+    # Embedding của bản không dấu, dùng khi người dùng gõ không dấu (NFR-07)
+    embedding_plain: Mapped[list[float] | None] = mapped_column(Vector(EMBEDDING_DIM))
 
     document: Mapped[Document] = relationship(back_populates="chunks")

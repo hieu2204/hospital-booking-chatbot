@@ -1,0 +1,20 @@
+{
+  "_ghi_chu": "BR-30. Cụm từ viết có dấu cho dễ đọc, hệ thống tự bỏ dấu khi so khớp. Ưu tiên báo nhầm hơn bỏ sót.",
+  "negations": ["không", "không còn", "hết", "chưa", "chưa từng", "đã hết"],
+  "messages": {
+    "default": "Các dấu hiệu bạn mô tả có thể nguy hiểm đến tính mạng. Hãy gọi ngay 115 hoặc đến khoa Cấp cứu gần nhất. Khoa Cấp cứu của bệnh viện hoạt động 24/7, số điện thoại (028) 3952 5515. Tôi tạm dừng việc đặt lịch khám thường để bạn được hỗ trợ kịp thời.",
+    "tu_hai": "Cảm ơn bạn đã chia sẻ, bạn không phải đối mặt chuyện này một mình. Nếu bạn đang có ý định làm hại bản thân, hãy gọi ngay 115 hoặc đến khoa Cấp cứu gần nhất, và báo cho một người thân đang ở gần bạn. Khoa Cấp cứu của bệnh viện hoạt động 24/7, số điện thoại (028) 3952 5515."
+  },
+  "categories": {
+    "dau_nguc": ["đau ngực dữ dội", "đau thắt ngực", "đau ngực lan ra tay", "đau ngực lan lên hàm", "đau ngực vã mồ hôi", "đau ngực đột ngột", "tức ngực khó thở"],
+    "kho_tho": ["khó thở", "không thở được", "thở không nổi", "ngộp thở", "thở hổn hển", "tím tái", "môi tím"],
+    "dot_quy": ["yếu liệt", "liệt nửa người", "yếu nửa người", "méo miệng", "nói ngọng đột ngột", "tê nửa người", "đột quỵ"],
+    "co_giat": ["co giật", "lên cơn động kinh"],
+    "bat_tinh": ["bất tỉnh", "ngất xỉu", "hôn mê", "lơ mơ", "gọi không tỉnh"],
+    "chay_mau": ["chảy máu nhiều", "chảy máu không cầm", "nôn ra máu", "ói ra máu", "ho ra máu", "đi ngoài ra máu nhiều", "băng huyết"],
+    "ngo_doc": ["ngộ độc", "uống thuốc trừ sâu", "uống nhầm thuốc", "uống quá liều"],
+    "chan_thuong": ["tai nạn giao thông", "chấn thương đầu", "gãy xương hở", "bỏng nặng"],
+    "di_ung_nang": ["sốc phản vệ", "sưng môi lưỡi", "phù mặt"],
+    "tu_hai": ["tự tử", "muốn chết", "không muốn sống", "tự làm hại bản thân", "tự hại", "kết liễu"]
+  }
+}

@@ -28,7 +28,9 @@ services:
     volumes:
       - ./backend:/app
       - ./knowledge:/knowledge:ro
+      - model_cache:/models
     command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
 volumes:
   db_data:
+  model_cache:

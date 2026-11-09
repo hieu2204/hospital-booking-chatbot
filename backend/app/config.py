@@ -33,9 +33,20 @@ class Settings(BaseSettings):
     # BR-16: thời gian giữ chỗ chờ thanh toán
     hold_minutes: int = 15
 
+    # BR-32: bản nháp do chatbot tạo hết hạn sau
+    draft_minutes: int = 15
+
     # BR-26, BR-28: hạn hủy, sửa vào ngày trước ngày khám
     cancel_cutoff: time = time(15, 0)
     edit_cutoff: time = time(16, 30)
+
+    # RAG
+    knowledge_dir: str = "/knowledge"
+    embedding_model: str = "intfloat/multilingual-e5-large"
+    model_cache_dir: str = "/models"
+    search_top_k: int = 5
+    search_min_score: float = 0.0
+    preload_embedding: bool = True
 
     @property
     def tz(self) -> ZoneInfo:

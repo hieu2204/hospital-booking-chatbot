@@ -14,8 +14,11 @@ from app.models import (
     Appointment,
     AppointmentStatus,
     BookingChannel,
+    BookingDraft,
+    ChatSession,
     ClinicSession,
     Department,
+    DraftStatus,
     Doctor,
     PatientProfile,
     PayerType,
@@ -258,6 +261,15 @@ def create_appointment(
     db: Session, user_id: int, request: BookingRequest, channel: BookingChannel
 ) -> tuple[Appointment, list[str]]:
     expire_holds(db)
+    appointment, warnings = insert_appointment(db, user_id, request, channel)
+    db.commit()
+    return appointment, warnings
+
+
+def insert_appointment(
+    db: Session, user_id: int, request: BookingRequest, channel: BookingChannel
+) -> tuple[Appointment, list[str]]:
+    """Kiểm tra quy tắc rồi tạo lịch giữ chỗ, chưa commit."""
     profile, session = validate_booking(db, user_id, request)
 
     appointment = Appointment(
@@ -282,9 +294,7 @@ def create_appointment(
     db.add(
         Payment(appointment_id=appointment.id, amount=session_price(db, session), method="demo")
     )
-    warnings = booking_warnings(session.date, request.payer_type, request.referral_expiry)
-    db.commit()
-    return appointment, warnings
+    return appointment, booking_warnings(session.date, request.payer_type, request.referral_expiry)
 
 
 def assign_queue(db: Session, appointment: Appointment, session: ClinicSession) -> None:
@@ -569,4 +579,104 @@ def ticket(db: Session, user_id: int, appointment_id: int) -> dict:
         **describe(db, appointment),
         "qr_payload": appointment.code,
         "instructions": INSTRUCTIONS[appointment.payer_type],
+    }
+
+
+def owned_chat_session(db: Session, user_id: int, chat_session_id) -> ChatSession:
+    chat = db.get(ChatSession, chat_session_id)
+    if chat is None or chat.user_id != user_id:
+        raise not_found("phiên chat")
+    return chat
+
+
+def prepare_booking(
+    db: Session, user_id: int, chat_session_id, request: BookingRequest
+) -> tuple[BookingDraft, list[str]]:
+    """BR-32: chatbot chỉ tạo bản nháp, chưa giữ chỗ. Kiểm tra trước mọi quy tắc."""
+    expire_holds(db)
+    owned_chat_session(db, user_id, chat_session_id)
+    _, session = validate_booking(db, user_id, request)
+
+    draft = BookingDraft(
+        chat_session_id=chat_session_id,
+        profile_id=request.profile_id,
+        session_id=session.id,
+        slot_time=request.slot_time,
+        payer_type=request.payer_type,
+        referral_expiry=request.referral_expiry,
+        symptoms=request.symptoms,
+        bhyt_consent=request.bhyt_consent,
+        expires_at=clock.now() + timedelta(minutes=settings.draft_minutes),
+    )
+    db.add(draft)
+    warnings = booking_warnings(session.date, request.payer_type, request.referral_expiry)
+    db.commit()
+    return draft, warnings
+
+
+def owned_draft(db: Session, user_id: int, draft_id, lock: bool = False) -> BookingDraft:
+    query = select(BookingDraft).where(BookingDraft.id == draft_id)
+    draft = db.scalar(query.with_for_update() if lock else query)
+    if draft is None or db.get(ChatSession, draft.chat_session_id).user_id != user_id:
+        raise not_found("bản nháp")
+    return draft
+
+
+def discard_draft(db: Session, draft_id) -> None:
+    db.execute(
+        update(BookingDraft)
+        .where(BookingDraft.id == draft_id, BookingDraft.status == DraftStatus.open)
+        .values(status=DraftStatus.discarded)
+    )
+    db.commit()
+
+
+def confirm_draft(db: Session, user_id: int, draft_id) -> tuple[Appointment, list[str]]:
+    """Nút Xác nhận gọi thẳng hàm này, không qua LLM (BR-32, E3, E4)."""
+    expire_holds(db)
+    draft = owned_draft(db, user_id, draft_id, lock=True)
+    if draft.status != DraftStatus.open:
+        raise BookingError("DRAFT_USED", "Bản nháp này đã được xử lý")
+    if draft.expires_at <= clock.now():
+        draft.status = DraftStatus.discarded
+        db.commit()
+        raise BookingError("DRAFT_EXPIRED", "Bản nháp đã hết hạn, vui lòng chọn lại giờ khám")
+
+    request = BookingRequest(
+        profile_id=draft.profile_id,
+        session_id=draft.session_id,
+        slot_time=draft.slot_time,
+        payer_type=draft.payer_type,
+        referral_expiry=draft.referral_expiry,
+        symptoms=draft.symptoms,
+        bhyt_consent=draft.bhyt_consent,
+    )
+    try:
+        appointment, warnings = insert_appointment(db, user_id, request, BookingChannel.chatbot)
+    except BookingError:
+        db.rollback()
+        discard_draft(db, draft_id)
+        raise
+    draft.status = DraftStatus.used
+    db.commit()
+    return appointment, warnings
+
+
+def describe_draft(db: Session, draft: BookingDraft) -> dict:
+    """Thẻ tóm tắt hiển thị trước khi người bệnh bấm Xác nhận."""
+    session = db.get(ClinicSession, draft.session_id)
+    room = db.get(Room, session.room_id)
+    doctor = db.get(Doctor, session.substitute_doctor_id or session.doctor_id)
+    return {
+        "id": draft.id,
+        "status": draft.status,
+        "patient_name": db.get(PatientProfile, draft.profile_id).full_name,
+        "department": db.get(Department, room.department_id).name,
+        "doctor_name": f"{doctor.title} {doctor.full_name}",
+        "room": room.name,
+        "service_type": db.get(ServiceType, session.service_type_id).name,
+        "slot_time": draft.slot_time,
+        "payer_type": draft.payer_type,
+        "price": session_price(db, session),
+        "expires_at": draft.expires_at,
     }

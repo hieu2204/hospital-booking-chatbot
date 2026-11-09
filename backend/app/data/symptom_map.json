@@ -1,0 +1,19 @@
+{
+  "_ghi_chu": "UC-06. Tên khoa phải khớp bảng departments. Cụm từ viết có dấu, hệ thống tự bỏ dấu khi so khớp; cụm dài được ưu tiên trước cụm ngắn.",
+  "fallback": "Khám bệnh",
+  "disclaimer": "Đây chỉ là gợi ý chuyên khoa dựa trên mô tả của bạn, không thay thế chẩn đoán của bác sĩ.",
+  "departments": {
+    "Nội Tim mạch": ["đau ngực", "tức ngực", "hồi hộp", "tim đập nhanh", "đánh trống ngực", "tăng huyết áp", "huyết áp cao", "cao huyết áp", "khó thở khi gắng sức", "phù chân", "suy tim", "rối loạn nhịp tim"],
+    "Tiêu hóa": ["đau bụng", "đau dạ dày", "đau bao tử", "đau thượng vị", "ợ chua", "ợ hơi", "trào ngược", "buồn nôn", "tiêu chảy", "táo bón", "đầy bụng", "khó tiêu", "vàng da", "men gan cao", "viêm gan", "đi ngoài ra máu", "trĩ"],
+    "Hô hấp": ["ho", "ho kéo dài", "ho có đờm", "khò khè", "hen", "hen suyễn", "viêm phổi", "viêm phế quản", "thở rít", "lao phổi", "khó thở"],
+    "Nội tiết": ["tiểu đường", "đái tháo đường", "đường huyết cao", "khát nước nhiều", "sụt cân không rõ lý do", "tuyến giáp", "bướu cổ", "cường giáp", "suy giáp", "béo phì"],
+    "Thần kinh": ["đau đầu", "nhức đầu", "đau nửa đầu", "chóng mặt", "mất ngủ", "tê bì", "tê tay chân", "run tay", "động kinh", "hay quên", "giảm trí nhớ", "đau thần kinh tọa"],
+    "Nội Cơ xương khớp": ["đau khớp", "đau gối", "đau lưng", "đau vai gáy", "đau cổ vai", "sưng khớp", "gút", "gout", "thoái hóa khớp", "loãng xương", "viêm khớp", "cứng khớp"],
+    "Tai Mũi Họng": ["đau họng", "viêm họng", "viêm xoang", "nghẹt mũi", "sổ mũi", "chảy máu mũi", "ù tai", "đau tai", "nghe kém", "khàn tiếng", "viêm amidan", "ngủ ngáy"],
+    "Mắt": ["mờ mắt", "nhìn mờ", "đau mắt", "đỏ mắt", "ngứa mắt", "chảy nước mắt", "cận thị", "viễn thị", "loạn thị", "đục thủy tinh thể", "cườm mắt", "khô mắt"],
+    "Da liễu - Thẩm mỹ da": ["ngứa", "nổi mẩn", "mẩn đỏ", "phát ban", "dị ứng da", "mụn", "mụn trứng cá", "nấm da", "chàm", "viêm da", "rụng tóc", "vảy nến", "mề đay", "nám da"],
+    "Phụ sản": ["kinh nguyệt không đều", "đau bụng kinh", "rong kinh", "trễ kinh", "khí hư", "huyết trắng", "mang thai", "có thai", "khám thai", "ra huyết âm đạo", "viêm phụ khoa", "ngứa vùng kín"],
+    "Tiết niệu": ["tiểu buốt", "tiểu rắt", "tiểu ra máu", "tiểu đêm", "tiểu khó", "sỏi thận", "đau hông lưng", "tiền liệt tuyến", "bí tiểu", "nước tiểu đục"],
+    "Phẫu thuật Hàm mặt - Răng hàm mặt": ["đau răng", "nhức răng", "sâu răng", "răng khôn", "ê buốt răng", "chảy máu chân răng", "sưng nướu", "viêm lợi", "hôi miệng", "niềng răng"]
+  }
+}

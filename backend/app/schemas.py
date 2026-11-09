@@ -1,8 +1,9 @@
+import uuid
 from datetime import date, datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models import AppointmentStatus, PayerType, Shift, UserRole
+from app.models import AppointmentStatus, DraftStatus, PayerType, Shift, UserRole
 
 PHONE = r"^0\d{9}$"
 
@@ -162,3 +163,46 @@ class TicketOut(AppointmentOut):
 
 class LockSessionIn(BaseModel):
     substitute_doctor_id: int | None = None
+
+
+class KnowledgeHit(BaseModel):
+    text: str
+    title: str
+    source_url: str | None
+    score: float
+
+
+class DraftOut(BaseModel):
+    id: uuid.UUID
+    status: DraftStatus
+    patient_name: str
+    department: str
+    doctor_name: str
+    room: str
+    service_type: str
+    slot_time: datetime
+    payer_type: PayerType
+    price: int
+    expires_at: datetime
+
+
+class EmergencyCheckIn(BaseModel):
+    message: str = Field(min_length=1)
+
+
+class EmergencyCheckOut(BaseModel):
+    is_emergency: bool
+    category: str | None
+    matched: str | None
+    message: str | None
+
+
+class DepartmentSuggestion(BaseModel):
+    department_id: int | None
+    department: str
+    matched: list[str]
+
+
+class SuggestOut(BaseModel):
+    suggestions: list[DepartmentSuggestion]
+    disclaimer: str

@@ -77,6 +77,6 @@ Cột **Áp dụng tại**:
 |---|---|---|---|
 | BR-29 | Bot **không chẩn đoán, không kê đơn**. Gợi ý chuyên khoa luôn kèm câu lưu ý | Giả định | Chatbot |
 | BR-30 | Phát hiện dấu hiệu cấp cứu (đau ngực dữ dội, khó thở, yếu liệt, co giật, bất tỉnh, chảy máu nhiều, có ý định tự hại) thì dừng luồng đặt lịch và hướng dẫn gọi **115** hoặc đến Cấp cứu, SĐT (028) 3952 5515 | UMC (13) / Giả định | Chatbot |
-| BR-31 | Bot chỉ trả lời thủ tục dựa trên tài liệu trong kho. Không tìm thấy thì nói rõ là không có thông tin và gợi ý tổng đài **1900 2827** | Giả định | Chatbot |
+| BR-31 | Bot chỉ trả lời thủ tục dựa trên tài liệu trong kho. Không tìm thấy thì nói rõ là không có thông tin và gợi ý tổng đài **1900 2827**. Điểm tương đồng của câu ngoài phạm vi chồng lên câu trong phạm vi (đo bằng `evals/eval_retrieval.py`), nên không lọc bằng ngưỡng điểm mà để LLM tự đánh giá đoạn tìm được có trả lời câu hỏi không | Giả định | Chatbot |
 | BR-32 | Trước khi tạo, hủy hoặc đổi lịch, bot phải **tóm tắt và chờ người dùng bấm xác nhận** | Giả định | Chatbot |
 | BR-33 | Không gửi số CCCD hoặc số thẻ BHYT đầy đủ cho LLM; chỉ gửi dạng đã che, ví dụ `****1234` | Giả định | Chatbot |

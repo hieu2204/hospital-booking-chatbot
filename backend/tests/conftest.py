@@ -10,6 +10,7 @@ from sqlalchemy.engine import make_url
 url = make_url(os.environ["DATABASE_URL"])
 TEST_DB = "chatbot_test"
 os.environ["DATABASE_URL"] = url.set(database=TEST_DB).render_as_string(hide_password=False)
+os.environ["PRELOAD_EMBEDDING"] = "false"
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
