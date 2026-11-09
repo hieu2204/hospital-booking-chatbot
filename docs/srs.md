@@ -58,7 +58,7 @@ Hệ thống có 31 yêu cầu chức năng, trong đó 26 thuộc MVP và 5 thu
 | FR-02 | Quản lý nhiều hồ sơ người bệnh trong một tài khoản | MVP | BR-12 |
 | FR-03 | Liên kết hồ sơ cũ bằng mã bệnh nhân | Mở rộng | BR-12a |
 | **Tra cứu và đặt lịch bằng form** |  |  |  |
-| FR-04 | Tra cứu khoa, bác sĩ và lịch khám theo buổi | MVP | BR-08 |
+| FR-04 | Tra cứu khoa, bác sĩ và lịch khám theo buổi: trang danh sách bác sĩ lọc theo khoa, ngày khám trong tuần và tên; trang chi tiết khoa có lịch khám trong tuần và bác sĩ của khoa; không cần đăng nhập | MVP | BR-08 |
 | FR-05 | Đặt lịch theo chuyên khoa | MVP | BR-12b, BR-13 |
 | FR-06 | Đặt lịch theo bác sĩ | MVP | BR-12b |
 | FR-07 | Sinh ca và slot 30 phút từ mẫu lịch tuần, bỏ Chủ nhật, ngày lễ và chiều thứ Bảy | MVP | BR-01 đến BR-06, BR-08 |
@@ -107,11 +107,11 @@ Các con số dưới đây là mục tiêu đề xuất cho đồ án, chưa ph
 | NFR-09 | Khả năng thay thế | Gọi LLM qua một lớp riêng, đổi model Claude bằng cấu hình | Đổi model, chạy lại bộ test |
 | NFR-10 | Truy vết | Ghi log mọi lần gọi tool và kết quả để điều tra khi bot sai | Xem log |
 | NFR-11 | Triển khai | Chạy toàn bộ bằng một lệnh Docker Compose, có script tạo dữ liệu mẫu | Cài trên máy sạch |
-| NFR-12 | Giao diện | Chat và đặt lịch dùng được trên điện thoại | Thử ở độ rộng 375 px |
+| NFR-12 | Giao diện | Mọi trang của người bệnh và quản trị dùng được trên điện thoại, không cuộn ngang; hiệu ứng chuyển động tự tắt khi hệ điều hành bật chế độ giảm chuyển động | Thử ở độ rộng 375 px; bật "Reduce motion" rồi tải lại trang |
 
 ## 5. Use case tổng quan
 
-Hệ thống có 13 use case, chia thành 3 nhóm. UC-07 "Đặt lịch qua chatbot" là use case trọng tâm của đồ án.
+Hệ thống có 14 use case, chia thành 3 nhóm. UC-07 "Đặt lịch qua chatbot" là use case trọng tâm của đồ án.
 
 ```mermaid
 flowchart LR
@@ -131,6 +131,7 @@ flowchart LR
         UC02["UC-02 Quản lý hồ sơ người bệnh"]
         UC03["UC-03 Đặt lịch bằng form"]
         UC04["UC-04 Xem, hủy, sửa lịch hẹn"]
+        UC14["UC-14 Tra cứu khoa và bác sĩ"]
     end
     subgraph VH["Quản trị và vận hành"]
         UC10["UC-10 Quản lý danh mục"]
@@ -153,7 +154,7 @@ Khung tô màu là nhóm chatbot, trọng tâm của đồ án. Bảng dưới �
 | --- | --- | --- | --- |
 | UC-01 | Đăng ký, đăng nhập | Khách | FR-01 |
 | UC-02 | Quản lý hồ sơ người bệnh | Bệnh nhân | FR-02, FR-03 |
-| UC-03 | Đặt lịch bằng form | Bệnh nhân | FR-04 đến FR-11 |
+| UC-03 | Đặt lịch bằng form | Bệnh nhân | FR-05 đến FR-11 |
 | UC-04 | Xem, hủy, sửa lịch hẹn | Bệnh nhân | FR-12 đến FR-14 |
 | UC-05 | Hỏi đáp thủ tục | Khách, Bệnh nhân, Dịch vụ LLM | FR-15, FR-17 |
 | UC-06 | Gợi ý chuyên khoa | Khách, Bệnh nhân, Dịch vụ LLM | FR-16 |
@@ -164,8 +165,9 @@ Khung tô màu là nhóm chatbot, trọng tâm của đồ án. Bảng dưới �
 | UC-11 | Quản lý lịch làm việc và lịch hẹn | Quản trị viên | FR-25, FR-26 |
 | UC-12 | Quản lý kho tri thức | Quản trị viên | FR-27 |
 | UC-13 | Xem bệnh nhân trong ngày | Bác sĩ | FR-28 |
+| UC-14 | Tra cứu khoa và bác sĩ | Khách, Bệnh nhân | FR-04 |
 
-UC-09 được include trong mọi use case chatbot, vì mọi tin nhắn đều đi qua bước kiểm tra này. UC-07 include UC-06 khi người bệnh chưa biết khoa.
+UC-09 được include trong mọi use case chatbot, vì mọi tin nhắn đều đi qua bước kiểm tra này. UC-07 include UC-06 khi người bệnh chưa biết khoa. UC-14 extend sang UC-03 khi người bệnh bấm đặt lịch từ trang khoa hoặc thẻ bác sĩ.
 
 ## 6. Đặc tả UC-07: Đặt lịch qua chatbot
 
@@ -282,6 +284,15 @@ Các use case dưới đây được đặc tả ở mức luồng chính và ng
 5. Nhận phiếu khám điện tử.
 
 UC-03 và UC-07 dùng chung một API đặt lịch, nên quy tắc chỉ cài đặt một lần. Ngoại lệ chính: slot vừa hết thì báo lỗi và tải lại danh sách slot.
+
+### UC-14: Tra cứu khoa và bác sĩ
+
+1. Người bệnh mở trang Bác sĩ, hoặc chọn một khoa từ menu Chuyên khoa hay trang chủ.
+2. Trang Bác sĩ: lọc theo khoa, theo ngày khám trong tuần (thứ Hai đến thứ Bảy) và tìm theo tên bác sĩ hoặc tên khoa.
+3. Trang chi tiết khoa: xem mô tả khoa, số bác sĩ, số buổi khám mỗi tuần, bảng lịch khám sáng, chiều từng ngày và danh sách bác sĩ của khoa.
+4. Bấm "Đặt lịch với bác sĩ" thì sang UC-03 với bác sĩ và khoa đã chọn sẵn; bấm "Đặt lịch khám khoa này" thì sang UC-03 với khoa đã chọn sẵn. Khách chưa đăng nhập được chuyển tới trang đăng nhập trước.
+
+Lịch khám hiển thị lấy từ mẫu lịch tuần của bác sĩ (BR-08), không phải slot còn trống; slot trống chỉ hiện ở bước chọn ngày giờ của UC-03.
 
 ### UC-04 và UC-08: Hủy, sửa lịch hẹn
 
@@ -412,7 +423,7 @@ stateDiagram-v2
 
 ## 9. Giả định và quyết định đã chốt
 
-Mọi điểm mở đã được chốt ngày 07/11/2026. Đây là bản demo nên quy định chỉ cần sát thực tế, không cần chính xác tuyệt đối. Báo cáo cần ghi rõ các dòng loại "Giả định" và ghi dữ liệu nghiệp vụ chỉ để tham khảo.
+Mọi điểm mở đã được chốt ngày 07/11/2026; các dòng về giao diện bổ sung ngày 09/11/2026. Đây là bản demo nên quy định chỉ cần sát thực tế, không cần chính xác tuyệt đối. Báo cáo cần ghi rõ các dòng loại "Giả định" và ghi dữ liệu nghiệp vụ chỉ để tham khảo.
 
 | Vấn đề | Quyết định | Loại |
 | --- | --- | --- |
@@ -425,6 +436,9 @@ Mọi điểm mở đã được chốt ngày 07/11/2026. Đây là bản demo n
 | LLM | Claude API | Quyết định kỹ thuật |
 | Vector DB | pgvector: miễn phí, chạy ngay trong PostgreSQL có sẵn nên không thêm dịch vụ nào. Giữ nguyên bảng `document_chunks` ở mục 8 | Quyết định kỹ thuật |
 | Thanh toán khi có BHYT | Demo thu đủ phí khám, mức hưởng BHYT chỉ để tư vấn. Khám trái tuyến chỉ cần tick cam kết; tải ảnh CCCD làm cùng frontend | Giả định |
+| Hiệu ứng giao diện | Dùng framer-motion cho hiệu ứng chuyển trang, hiện dần khi cuộn và các thẻ trong chat; câu cảnh báo cấp cứu giữ nguyên văn, hiệu ứng chỉ để thẻ nổi bật (BR-30) | Quyết định kỹ thuật |
+| Thông tin hiển thị của bệnh viện | Tên, địa chỉ, tổng đài, số cấp cứu, giờ làm việc và số ngày đặt trước gom ở `frontend/src/site.ts`. Chỉ dùng để trình bày; quy tắc vẫn do backend kiểm tra (NFR-08) | Quyết định kỹ thuật |
+| Nội dung minh họa trên trang chủ | Phần đánh giá của người bệnh là minh họa, ghi rõ trên giao diện; tên bác sĩ là giả định | Giả định |
 
 ## Nguồn
 
