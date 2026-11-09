@@ -9,6 +9,12 @@ def normalize_vi(text: str) -> str:
     return " ".join(re.findall(r"[a-z0-9]+", text))
 
 
+def mask_pii(text: str) -> str:
+    """BR-33: che dãy số dài (CCCD, số BHYT) trước khi lưu hoặc gửi cho LLM."""
+    text = re.sub(r"\b[A-Za-z]{2}\d{13}\b", lambda m: "****" + m.group(0)[-4:], text)
+    return re.sub(r"\b\d{9,15}\b", lambda m: "****" + m.group(0)[-4:], text)
+
+
 def has_diacritics(text: str) -> bool:
     """Câu có dấu tiếng Việt hay không, ví dụ "kho tho" thì không."""
     plain = " ".join(re.findall(r"[a-z0-9]+", text.lower()))

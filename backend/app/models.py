@@ -297,8 +297,13 @@ class ChatMessage(Base):
     session_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("chat_sessions.id"), index=True)
     role: Mapped[ChatRole] = mapped_column(enum_type(ChatRole))
     content: Mapped[str] = mapped_column(Text)
+    # Khối nội dung đúng như gửi hoặc nhận từ API, phát lại nguyên văn ở lượt sau
+    blocks: Mapped[list | None] = mapped_column(JSONB)
+    # NFR-10: các lần gọi tool trong lượt này và kết quả
     tool_calls: Mapped[list | None] = mapped_column(JSONB)
     sources: Mapped[list | None] = mapped_column(JSONB)
+    # Thẻ hiển thị cho giao diện, token và chi phí
+    meta: Mapped[dict | None] = mapped_column(JSONB)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 

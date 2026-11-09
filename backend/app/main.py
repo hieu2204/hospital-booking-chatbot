@@ -14,6 +14,7 @@ from app.routers import (
     auth,
     booking_drafts,
     catalog,
+    chat,
     knowledge,
     profiles,
     triage,
@@ -40,6 +41,7 @@ app.include_router(admin.router)
 app.include_router(knowledge.router)
 app.include_router(booking_drafts.router)
 app.include_router(triage.router)
+app.include_router(chat.router)
 
 
 @app.exception_handler(BookingError)

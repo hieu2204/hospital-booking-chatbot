@@ -206,3 +206,26 @@ class DepartmentSuggestion(BaseModel):
 class SuggestOut(BaseModel):
     suggestions: list[DepartmentSuggestion]
     disclaimer: str
+
+
+class ChatSessionOut(BaseModel):
+    id: uuid.UUID
+
+
+class ChatIn(BaseModel):
+    message: str = Field(min_length=1, max_length=2000)
+
+
+class ChatReply(BaseModel):
+    reply: str
+    cards: list[dict]
+    sources: list[dict]
+    emergency: bool
+
+
+class ChatMessageOut(BaseModel):
+    role: str
+    content: str
+    cards: list[dict]
+    sources: list[dict]
+    created_at: datetime

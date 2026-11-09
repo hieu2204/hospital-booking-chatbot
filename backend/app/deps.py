@@ -20,6 +20,15 @@ def get_current_user(
     return user
 
 
+def get_optional_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer),
+    db: Session = Depends(get_db),
+) -> User | None:
+    """Khách chưa đăng nhập vẫn chat được (UC-05, UC-06)."""
+    user_id = decode_access_token(credentials.credentials) if credentials else None
+    return db.get(User, user_id) if user_id else None
+
+
 def require_admin(user: User = Depends(get_current_user)) -> User:
     if user.role != UserRole.admin:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Không có quyền")

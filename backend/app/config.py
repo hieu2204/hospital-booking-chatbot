@@ -48,6 +48,18 @@ class Settings(BaseSettings):
     search_min_score: float = 0.0
     preload_embedding: bool = True
 
+    # Chatbot. Đổi mô hình bằng biến môi trường CHAT_MODEL (NFR-09)
+    chat_model: str = "claude-sonnet-5-5"
+    chat_effort: str = "low"
+    chat_max_tokens: int = 8000
+    chat_max_steps: int = 8
+    chat_max_message_chars: int = 2000
+    # Giá USD trên 1 triệu token (vào, ra), để theo dõi chi phí
+    model_prices: dict[str, tuple[float, float]] = {
+        "claude-sonnet-5-5": (2.0, 10.0),
+        "claude-haiku-5-5": (0.10, 0.50),
+    }
+
     @property
     def tz(self) -> ZoneInfo:
         return ZoneInfo(self.timezone)

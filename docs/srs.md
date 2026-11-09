@@ -267,6 +267,8 @@ Mọi tool chạy với quyền của người đang đăng nhập. `user_id` l�
 | `get_available_slots` | Khoa hoặc bác sĩ, khoảng ngày | Slot còn trống | Không |
 | `prepare_booking` | Hồ sơ, slot, hình thức khám, đối tượng thanh toán | Mã bản nháp và tóm tắt, hoặc mã lỗi | Chỉ tạo bản nháp |
 
+Khi cài đặt có thêm 4 tool: `list_departments` (id khoa, hình thức khám, giá), `list_my_appointments`, `propose_cancel` và `propose_reschedule`. Hai tool cuối chỉ kiểm tra hạn và hiện thẻ xác nhận; người bệnh tự bấm, việc hủy hay đổi đi thẳng tới API như UC-07.
+
 ## 7. Đặc tả rút gọn các use case chính khác
 
 Các use case dưới đây được đặc tả ở mức luồng chính và ngoại lệ quan trọng nhất. Các use case CRUD đơn giản (UC-01, UC-02, UC-10) không cần đặc tả riêng.
