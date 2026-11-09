@@ -1,0 +1,270 @@
+{
+ "_ghi_chu": "NFR-06: hoàn tất đặt lịch qua chat (UC-07, FR-19). turns = tin nhắn người dùng theo thứ tự; sau đó, nếu bot chưa tạo bản nháp, tự gửi thêm các câu trong follow_up như một người dùng bình thường: nhắc lại khám cho ai, rồi chọn lựa chọn đầu tiên. {who} được thay bằng \"bản thân mình\" hoặc \"mẹ mình\" theo hồ sơ của kịch bản. Đạt khi bot tạo bản nháp (prepare_booking) khớp mọi điều kiện trong expect. profile: self = hồ sơ Bản thân, mother = hồ sơ Mẹ (có BHYT 80%, đã có ảnh CCCD). weekdays: 0 là thứ Hai. {doctor:<khoa>} được thay bằng tên bác sĩ đầu tiên của khoa đó.",
+ "follow_up": [
+  "Khám cho {who}. Giờ nào cũng được, bạn chọn giúp mình lựa chọn đầu tiên, giờ sớm nhất nhé",
+  "Mình chọn lựa chọn số 1, bạn tạo phiếu đặt lịch giúp mình nhé"
+ ],
+ "cases": [
+  {
+   "id": "dl01",
+   "turns": [
+    "Mình muốn đặt khám Tiêu hóa cho bản thân vào sáng thứ Tư, không dùng bảo hiểm."
+   ],
+   "expect": {
+    "department": "Tiêu hóa",
+    "profile": "self",
+    "payer": "none",
+    "weekdays": [
+     2
+    ],
+    "shift": "morning"
+   }
+  },
+  {
+   "id": "dl02",
+   "turns": [
+    "Đặt lịch khám tim mạch cho mẹ mình, mẹ có BHYT nhưng không có giấy chuyển tuyến, buổi sáng nào cũng được.",
+    "Mẹ mình đồng ý cam kết khám trái tuyến"
+   ],
+   "expect": {
+    "department": "Nội Tim mạch",
+    "profile": "mother",
+    "payer": "bhyt_trai_tuyen",
+    "shift": "morning"
+   }
+  },
+  {
+   "id": "dl03",
+   "turns": [
+    "Mình bị đau dạ dày, ợ chua mấy hôm nay. Đặt giúp mình lịch khám sớm nhất, mình tự trả tiền, khám cho bản thân."
+   ],
+   "expect": {
+    "department": "Tiêu hóa",
+    "profile": "self",
+    "payer": "none"
+   }
+  },
+  {
+   "id": "dl04",
+   "turns": [
+    "dat lich kham mat cho minh vao chieu thu 3, khong dung bhyt"
+   ],
+   "expect": {
+    "department": "Mắt",
+    "profile": "self",
+    "payer": "none",
+    "weekdays": [
+     1
+    ],
+    "shift": "afternoon"
+   }
+  },
+  {
+   "id": "dl05",
+   "turns": [
+    "Mình muốn khám Tai Mũi Họng vào thứ 7, cho bản thân, không dùng bảo hiểm"
+   ],
+   "expect": {
+    "department": "Tai Mũi Họng",
+    "profile": "self",
+    "payer": "none",
+    "weekdays": [
+     5
+    ]
+   }
+  },
+  {
+   "id": "dl06",
+   "turns": [
+    "Đặt cho mẹ mình lịch khám Nội tiết, mẹ có giấy chuyển tuyến còn hạn nên dùng BHYT đúng tuyến",
+    "Giấy chuyển tuyến của mẹ còn hạn đến ngày 31/12/2026"
+   ],
+   "expect": {
+    "department": "Nội tiết",
+    "profile": "mother",
+    "payer": "bhyt_dung_tuyen"
+   }
+  },
+  {
+   "id": "dl07",
+   "turns": [
+    "Mình hay đau đầu, chóng mặt, muốn khám vào buổi chiều, khám cho bản thân, không dùng bảo hiểm"
+   ],
+   "expect": {
+    "department": "Thần kinh",
+    "profile": "self",
+    "payer": "none",
+    "shift": "afternoon"
+   }
+  },
+  {
+   "id": "dl08",
+   "turns": [
+    "Mình muốn đặt Phòng khám Chuyên gia khoa Nội Cơ xương khớp cho bản thân, không dùng bảo hiểm"
+   ],
+   "expect": {
+    "department": "Nội Cơ xương khớp",
+    "profile": "self",
+    "payer": "none",
+    "service": "Phòng khám Chuyên gia"
+   }
+  },
+  {
+   "id": "dl09",
+   "turns": [
+    "Mẹ mình đau khớp gối, đặt lịch khám cho mẹ vào sáng thứ Sáu, mẹ khám dịch vụ, không dùng bảo hiểm"
+   ],
+   "expect": {
+    "department": "Nội Cơ xương khớp",
+    "profile": "mother",
+    "payer": "none",
+    "weekdays": [
+     4
+    ],
+    "shift": "morning"
+   }
+  },
+  {
+   "id": "dl10",
+   "turns": [
+    "Mình cần khám da liễu vì nổi mẩn ngứa, chiều nào cũng được, cho bản thân, không dùng BHYT"
+   ],
+   "expect": {
+    "department": "Da liễu - Thẩm mỹ da",
+    "profile": "self",
+    "payer": "none",
+    "shift": "afternoon"
+   }
+  },
+  {
+   "id": "dl11",
+   "turns": [
+    "Đặt khám răng hàm mặt cho mình, răng khôn đau quá, ngày nào sớm nhất cũng được",
+    "Mình không dùng bảo hiểm"
+   ],
+   "expect": {
+    "department": "Phẫu thuật Hàm mặt - Răng hàm mặt",
+    "profile": "self",
+    "payer": "none"
+   }
+  },
+  {
+   "id": "dl12",
+   "turns": [
+    "Mình muốn tái khám khoa Tiêu hóa vào thứ Hai, cho bản thân, không dùng BHYT"
+   ],
+   "expect": {
+    "department": "Tiêu hóa",
+    "profile": "self",
+    "payer": "none",
+    "weekdays": [
+     0
+    ],
+    "service": "Tái khám"
+   }
+  },
+  {
+   "id": "dl13",
+   "turns": [
+    "Đặt khám Hô hấp cho mẹ mình, mẹ ho kéo dài, mẹ có bảo hiểm tư nhân bảo lãnh viện phí"
+   ],
+   "expect": {
+    "department": "Hô hấp",
+    "profile": "mother",
+    "payer": "bao_lanh"
+   }
+  },
+  {
+   "id": "dl14",
+   "turns": [
+    "Mình muốn khám Tiết niệu vào buổi sáng, cho bản thân, mình tự trả tiền"
+   ],
+   "expect": {
+    "department": "Tiết niệu",
+    "profile": "self",
+    "payer": "none",
+    "shift": "morning"
+   }
+  },
+  {
+   "id": "dl15",
+   "turns": [
+    "Đặt lịch khám phụ khoa cho mình vào chiều thứ Năm, không dùng bảo hiểm"
+   ],
+   "expect": {
+    "department": "Phụ sản",
+    "profile": "self",
+    "payer": "none",
+    "weekdays": [
+     3
+    ],
+    "shift": "afternoon"
+   }
+  },
+  {
+   "id": "dl16",
+   "turns": [
+    "Mình muốn khám với bác sĩ {doctor:Nội Tim mạch} khoa Nội Tim mạch, cho bản thân, không dùng bảo hiểm"
+   ],
+   "expect": {
+    "department": "Nội Tim mạch",
+    "profile": "self",
+    "payer": "none",
+    "doctor": "{doctor:Nội Tim mạch}"
+   }
+  },
+  {
+   "id": "dl17",
+   "turns": [
+    "Cho mình đặt khám khoa Thần kinh, ngày nào cũng được, lấy giờ sớm nhất, mình khám dịch vụ cho bản thân"
+   ],
+   "expect": {
+    "department": "Thần kinh",
+    "profile": "self",
+    "payer": "none"
+   }
+  },
+  {
+   "id": "dl18",
+   "turns": [
+    "Mình muốn đặt lịch khám",
+    "Khám cho bản thân mình",
+    "Khoa Mắt",
+    "Buổi sáng, không dùng bảo hiểm"
+   ],
+   "expect": {
+    "department": "Mắt",
+    "profile": "self",
+    "payer": "none",
+    "shift": "morning"
+   }
+  },
+  {
+   "id": "dl19",
+   "turns": [
+    "Đặt khám Nội tiết cho mình, mình bị tiểu đường, chiều thứ Tư hoặc chiều thứ Sáu, không dùng BHYT"
+   ],
+   "expect": {
+    "department": "Nội tiết",
+    "profile": "self",
+    "payer": "none",
+    "weekdays": [
+     2,
+     4
+    ],
+    "shift": "afternoon"
+   }
+  },
+  {
+   "id": "dl20",
+   "turns": [
+    "Mẹ mình cần khám mắt vì nhìn mờ, mẹ có BHYT nhưng không có giấy chuyển tuyến, mẹ đồng ý cam kết khám trái tuyến"
+   ],
+   "expect": {
+    "department": "Mắt",
+    "profile": "mother",
+    "payer": "bhyt_trai_tuyen"
+   }
+  }
+ ]
+}

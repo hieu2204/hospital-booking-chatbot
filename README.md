@@ -42,3 +42,25 @@ docker compose run --rm --no-deps frontend npm run build                  # ki�
 sh tools/screenshots/run.sh                                               # chụp màn hình các trang vào tools/screenshots/out/
 docker compose down -v                                                    # xóa cả dữ liệu và mô hình đã tải
 ```
+
+## Đánh giá chatbot (NFR-06)
+
+Bộ đánh giá gọi Claude thật nên có tốn tiền. Cả bộ 114 ca chạy khoảng 3 phút với 4 luồng, tốn khoảng $0,15 với Haiku và $2,6 với Sonnet.
+
+```bash
+docker compose exec backend python -m evals.chat_quality                                  # cả bộ, mô hình theo cấu hình
+docker compose exec -e CHAT_MODEL=claude-haiku-5-5 backend python -m evals.chat_quality   # chạy rẻ khi đang sửa
+docker compose exec backend python -m evals.chat_quality --suite dat_lich --ids dl01,dl02  # vài ca
+docker compose exec backend python -m evals.chat_quality --regrade evals/reports/<file>.json  # chấm lại kết quả cũ, không tốn tiền
+docker compose exec backend python -m evals.eval_retrieval                                # chất lượng tìm tài liệu, không tốn tiền
+```
+
+Bộ test nằm ở `backend/evals/chat_cases/`:
+
+| File | Nội dung | Mục tiêu |
+|---|---|---|
+| `thu_tuc.json` | 46 câu thủ tục, kèm câu không có trong tài liệu, câu ngoài phạm vi, câu hỏi thuốc và chẩn đoán | Trả lời đúng ≥ 85% |
+| `chuyen_khoa.json` | 30 mô tả triệu chứng, có câu không dấu | Gợi ý đúng khoa ≥ 80% |
+| `dat_lich.json` | 20 kịch bản đặt lịch nhiều lượt | Hoàn tất ≥ 90% |
+
+Câu thủ tục đạt khi câu trả lời có đủ các ý bắt buộc lấy từ `knowledge/` và có trích nguồn. Gợi ý khoa đạt khi nêu đúng khoa và có câu lưu ý. Kịch bản đặt lịch đạt khi bot tạo bản nháp đúng khoa, hồ sơ, đối tượng thanh toán và buổi khám. Báo cáo ghi vào `backend/evals/reports/`; script dùng tài khoản riêng `0900009001`, không đụng tài khoản demo.

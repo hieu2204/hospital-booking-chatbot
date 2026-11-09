@@ -6,3 +6,6 @@ __pycache__/
 node_modules/
 dist/
 .vscode/
+
+# Chi tiết từng lượt chat của bộ đánh giá, chỉ giữ báo cáo .md
+backend/evals/reports/*.json
